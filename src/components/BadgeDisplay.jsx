@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSelector } from 'react-redux';
-import { getBadgeIcon, getBadgeLevelClass, getIcon } from '../utils/badgeUtils';
+import { getBadgeIcon, getBadgeLevelClass } from '../utils/badgeUtils';
 import { getAllBadges } from '../services/badgeService';
 import Confetti from 'react-confetti';
 

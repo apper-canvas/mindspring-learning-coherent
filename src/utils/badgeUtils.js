@@ -1,5 +1,6 @@
  import { v4 as uuidv4 } from 'uuid';
- import { getIcon } from './iconUtils';
+import * as lucide from 'lucide-react';
+import { getIcon as getIconUtil } from './iconUtils';
  
 // Badge Types & Levels
 export const BADGE_TYPES = {
@@ -24,6 +25,32 @@ export const BADGE_CATEGORIES = {
   ENGAGEMENT: 'engagement',
   ACHIEVEMENT: 'achievement',
   SPECIAL: 'special'
+};
+
+// Function to get appropriate icon component for a badge
+export const getBadgeIcon = (iconName) => {
+  // If no icon provided, default to Award icon
+  if (!iconName) return lucide.Award;
+  
+  // Try to get the icon from lucide-react
+  const IconComponent = lucide[iconName.charAt(0).toUpperCase() + iconName.slice(1)];
+  return IconComponent || lucide.Award; // Fallback to Award if icon not found
+};
+
+// Function to get CSS class for badge level
+export const getBadgeLevelClass = (level) => {
+  switch (level) {
+    case BADGE_LEVELS.BRONZE:
+      return 'bg-badge-bronze';
+    case BADGE_LEVELS.SILVER:
+      return 'bg-badge-silver';
+    case BADGE_LEVELS.GOLD:
+      return 'bg-badge-gold';
+    case BADGE_LEVELS.PLATINUM:
+      return 'bg-badge-platinum';
+    default:
+      return 'bg-badge-bronze'; // Default to bronze
+  }
 };
 
 // Helper functions to create badge objects
