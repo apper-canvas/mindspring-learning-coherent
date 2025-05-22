@@ -99,11 +99,10 @@ const CourseProgress = ({ courses, loading }) => {
               <div className="w-full bg-surface-200 dark:bg-surface-600 rounded-full h-2.5">
                 <motion.div 
                 initial={{ width: 0 }}
-                animate={{ width: `${course.progress}%` }}
+                animate={{ width: `${course.progress}%` }} 
                 transition={{ duration: 0.5, ease: "easeOut" }}
                 className="bg-primary h-2.5 rounded-full"
-                style={{ width: `${course.progress}%` }}
-                >
+                ></motion.div>
               </div>
             </div>
           </motion.div>
