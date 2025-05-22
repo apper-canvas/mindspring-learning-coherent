@@ -70,7 +70,7 @@ const createFirstLessonBadge = (courseTitle) => ({
 });
 
 const createOfflineWarriorBadge = (courseTitle) => ({
-  title: "Offline Warrior", 
+  id: uuidv4(),
   title: "Offline Warrior",
   type: BADGE_TYPES.OFFLINE_WARRIOR,
   description: `Completed a lesson in ${courseTitle} while offline`,
@@ -123,3 +123,59 @@ const createDefaultBadge = (level, category, courseTitle) => ({
   category: category || BADGE_CATEGORIES.ACHIEVEMENT,
   points: 25
 });
+
+// Check if a user is eligible for a specific badge
+export const checkBadgeEligibility = (badgeTypeId, user) => {
+  if (!user) return false;
+  
+  // Implement eligibility logic based on badge type
+  switch (badgeTypeId) {
+    case BADGE_TYPES.FIRST_STEP:
+      // Eligible if user has started at least one course
+      return user.coursesStarted && user.coursesStarted > 0;
+      
+    case BADGE_TYPES.FIRST_LESSON:
+      // Eligible if user has completed at least one lesson
+      return user.lessonsCompleted && user.lessonsCompleted > 0;
+      
+    case BADGE_TYPES.OFFLINE_WARRIOR:
+      // Eligible if user has completed lessons in offline mode
+      return user.offlineLessonsCompleted && user.offlineLessonsCompleted > 0;
+      
+    case BADGE_TYPES.HALFWAY:
+      // Eligible if user has reached 50% in any course
+      return user.courseProgress && Object.values(user.courseProgress).some(progress => progress >= 50);
+      
+    case BADGE_TYPES.COURSE_COMPLETE:
+      // Eligible if user has completed at least one course
+      return user.coursesCompleted && user.coursesCompleted > 0;
+      
+    case BADGE_TYPES.QUIZ_MASTER:
+      // Eligible if user has achieved a perfect score in any quiz
+      return user.perfectQuizzes && user.perfectQuizzes > 0;
+      
+    default:
+      // Default eligibility check
+      return true;
+  }
+};
+
+// Create a badge instance with necessary properties for database storage
+export const createBadgeInstance = (badgeTypeKey, courseId, courseTitle) => {
+  if (!BADGE_TYPES[badgeTypeKey] || !courseId || !courseTitle) {
+    return null;
+  }
+  
+  // Create the badge with course context
+  const badge = createBadge(badgeTypeKey, null, null, courseTitle);
+  
+  // Add properties needed for database storage
+  return {
+    ...badge,
+    badgeTypeId: BADGE_TYPES[badgeTypeKey],
+    courseId: courseId,
+    courseTitle: courseTitle,
+    earnedAt: new Date().toISOString(),
+    isNew: true
+  };
+};

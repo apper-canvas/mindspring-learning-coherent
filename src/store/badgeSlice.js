@@ -34,11 +34,11 @@ export const checkAndAwardBadge = createAsyncThunk(
 
     // Check if already has this badge for this course
     const hasBadge = existingBadges.some(
-      badge => badge.badgeTypeId === BADGE_TYPES[badgeTypeKey].id && badge.courseId === courseId
+      badge => badge.badgeTypeId === BADGE_TYPES[badgeTypeKey] && badge.courseId === courseId
     );
     
     // If already has badge or not eligible, return null
-    if (hasBadge || !checkBadgeEligibility(BADGE_TYPES[badgeTypeKey].id, userState)) {
+    if (hasBadge || !checkBadgeEligibility(BADGE_TYPES[badgeTypeKey], userState)) {
         return { success: false, message: 'Not eligible for badge' };
     }
     
