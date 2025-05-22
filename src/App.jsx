@@ -148,46 +148,6 @@ function App() {
   };
 
   return (
-    <>
-      <Header darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
-      
-      <AnimatePresence mode="wait">
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/courses" element={<Courses />} />
-          <Route path="/courses/:id" element={<CourseDetail />} />
-          <Route path="/community/study-groups" element={<Community />} />
-          <Route path="/community/forums" element={<Community />} />
-          <Route path="/community/mentorship" element={<Community />} />
-  // Handle online/offline status
-  useEffect(() => {
-    const handleOnline = () => {
-      dispatch(checkNetworkStatus(true));
-      toast.success('You are back online!');
-      
-      // Sync offline progress with server when connection is restored
-      dispatch(syncOfflineProgress());
-    };
-
-    const handleOffline = () => {
-      dispatch(checkNetworkStatus(false));
-      toast.info('You are offline. Your progress will be saved locally.');
-    };
-
-    // Check initial status
-    dispatch(checkNetworkStatus(navigator.onLine));
-    
-    // Set up event listeners for online/offline status changes
-    window.addEventListener('online', handleOnline);
-    window.addEventListener('offline', handleOffline);
-
-    return () => {
-      window.removeEventListener('online', handleOnline);
-      window.removeEventListener('offline', handleOffline);
-    };
-  }, [dispatch]);
-
-          <Route path="/practice/:type" element={<NotFound />} />
     <AuthContext.Provider value={authMethods}>
       <Header darkMode={darkMode} toggleDarkMode={toggleDarkMode} isAuthenticated={isAuthenticated} />
       <main className="min-h-screen">
@@ -205,6 +165,7 @@ function App() {
             <Route path="/community/study-groups" element={<Community />} />
             <Route path="/community/forums" element={<Community />} />
             <Route path="/community/mentorship" element={<Community />} />
+            <Route path="/practice/:type" element={<NotFound />} />
             <Route path="/badges" element={<ProtectedRoute element={<Badges />} />} />
             <Route path="/dashboard" element={<ProtectedRoute element={<Dashboard />} />} />
             <Route path="*" element={<NotFound />} />
@@ -213,9 +174,37 @@ function App() {
       </main>
       <Footer />
       <ToastContainer
+      />
+    </AuthContext.Provider>
   );
 }
 
+// Handle online/offline status
+useEffect(() => {
+  const handleOnline = () => {
+    dispatch(checkNetworkStatus(true));
+    toast.success('You are back online!');
+    
+    // Sync offline progress with server when connection is restored
+    dispatch(syncOfflineProgress());
+  };
+
+  const handleOffline = () => {
+    dispatch(checkNetworkStatus(false));
+    toast.info('You are offline. Your progress will be saved locally.');
+  };
+
+  // Check initial status
+  dispatch(checkNetworkStatus(navigator.onLine));
+  
+  // Set up event listeners for online/offline status changes
+  window.addEventListener('online', handleOnline);
+  window.addEventListener('offline', handleOffline);
+
+  return () => {
+    window.removeEventListener('online', handleOnline);
+    window.removeEventListener('offline', handleOffline);
+  };
+}, [dispatch]);
+
 export default App;
-      />
-    </AuthContext.Provider>
