@@ -832,11 +832,10 @@ const MainFeature = () => {
             </div>
           </div>
         )}
-      )}
       
-      {/* Badges Tab */}
-      {activeTab === 'badges' && (
-        <div className="space-y-8">
+        {/* Badges Tab */}
+        {activeTab === 'badges' && (
+          <div className="space-y-8">
           <div className="bg-surface-50 dark:bg-surface-800 rounded-xl p-6">
             <div className="flex justify-between items-center mb-6">
               <h3 className="text-xl font-semibold">Your Badges</h3>
@@ -868,7 +867,8 @@ const MainFeature = () => {
               )}
             </div>
           </div>
-        </div>
+          </div>
+        )}
       </div>
     </div>
   );
