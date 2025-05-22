@@ -11,6 +11,7 @@ import './utils/leaderboardUtils';
 // Pages
 import Home from './pages/Home';
 import NotFound from './pages/NotFound';
+import Explore from './pages/Explore';
 import Courses from './pages/Courses';
 
 // Components
@@ -82,6 +83,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/courses" element={<Courses />} />
+          <Route path="/explore" element={<Explore />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </AnimatePresence>
