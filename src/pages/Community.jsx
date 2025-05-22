@@ -198,7 +198,7 @@ const Community = () => {
   };
 
   return (
-    <>
+    <> 
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">
         <h1 className="text-3xl font-bold mb-2">Community</h1>
@@ -322,8 +322,7 @@ const Community = () => {
             </button>
         </div>
       </div> {/* End of grid layout */}
-      
-      {/* Create Post Modal - Moved outside the grid layout */}
+        {/* Create Post Modal - Moved outside the grid layout */}
         {isCreateModalOpen && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <motion.div 
