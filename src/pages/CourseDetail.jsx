@@ -286,19 +286,20 @@ const CourseDetail = () => {
       {/* Course Resources - In a real app, we would fetch resources for this course */}
       {false && (
       <div className="mb-12">
-        <div className="card">
-          <div className="p-6">
-            <h2 className="text-xl font-bold mb-4 flex items-center">
-              <FileTextIcon className="w-5 h-5 mr-2 text-primary" />
-              Course Resources
-            </h2>
-            <p className="text-surface-600 dark:text-surface-400 mb-6">
-              Download these materials to enhance your learning experience. These resources are available offline once downloaded.
-            </p>
-            <CourseResources courseId={course.Id} />
+          <div className="card">
+            <div className="p-6">
+              <h2 className="text-xl font-bold mb-4 flex items-center">
+                <FileTextIcon className="w-5 h-5 mr-2 text-primary" />
+                Course Resources
+              </h2>
+              <p className="text-surface-600 dark:text-surface-400 mb-6">
+                Download these materials to enhance your learning experience. These resources are available offline once downloaded.
+              </p>
+              <CourseResources courseId={course.Id} />
+            </div>
+          </div>
         </div>
       )}
-      </div>
 
     </div>
   );
