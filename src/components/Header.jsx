@@ -1,5 +1,5 @@
-import { useState, useRef } from 'react';
-import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { useState, useRef, useContext } from 'react';
+import { Link, NavLink, useNavigate } from 'react-router-dom'; 
 import { motion, AnimatePresence } from 'framer-motion';
 import { getIcon } from '../utils/iconUtils';
 import { Menu, X, Moon, Sun, ChevronDown, Sparkles, Home, BookOpen, Compass, Award, MessageSquare, LogOut, Settings, User, Users as UsersIcon } from 'lucide-react';
@@ -50,12 +50,7 @@ const Header = ({ darkMode, toggleDarkMode, isAuthenticated }) => {
           <span className="font-bold text-xl text-surface-900 dark:text-white">MindSpring</span>
           </Link>
 
-    {
-      name: "Users",
-      path: "/users",
-      icon: <UsersIcon size={18} />,
-      requiresAuth: false
-    },
+
         {/* Mobile menu button */}
         <button className="lg:hidden" onClick={() => setIsMenuOpen(!isMenuOpen)}>
           <MenuIcon className="w-6 h-6 text-surface-900 dark:text-white" />
