@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { getOfflineCourses, saveOfflineCourse, saveCourseProgress,
-         deleteOfflineCourse, getOfflineCoursesProgress, saveCompleteCourseData } from '../utils/indexedDBUtils';
+         deleteOfflineCourse, getOfflineCoursesProgress, saveCompleteCourseData, saveResource } from '../utils/indexedDBUtils';
 
 export const fetchOfflineCourses = createAsyncThunk(
   'offline/fetchOfflineCourses',
@@ -99,6 +99,43 @@ export const downloadModule = createAsyncThunk(
   }
 );
 
+export const downloadResource = createAsyncThunk(
+  'offline/downloadResource',
+  async ({ courseId, resource }, { dispatch }) => {
+    // Update download status for the resource
+    dispatch(setResourceDownloadStatus({
+      courseId,
+      resourceId: resource.id,
+      status: 'downloading',
+      progress: 0
+    }));
+
+    // Simulate resource download
+    let progress = 0;
+    const interval = setInterval(() => {
+      progress += 15;
+      dispatch(updateResourceDownloadProgress({
+        courseId,
+        resourceId: resource.id,
+        progress: Math.min(progress, 100)
+      }));
+      
+      if (progress >= 100) {
+        clearInterval(interval);
+        
+        // Save the resource to IndexedDB
+        saveResource({
+          ...resource,
+          id: resource.id,
+          courseId: courseId
+        });
+      }
+    }, 400);
+
+    return { courseId, resourceId: resource.id };
+  }
+);
+
 export const syncOfflineProgress = createAsyncThunk(
   'offline/syncProgress',
   async (_, { getState }) => {
@@ -116,6 +153,7 @@ const offlineSlice = createSlice({
     courses: [],
     downloads: {},
     moduleDownloads: {},
+    resourceDownloads: {},
     isLoading: false,
     error: null
   },
@@ -145,6 +183,20 @@ const offlineSlice = createSlice({
       if (state.moduleDownloads[courseId]?.[moduleId]) {
         state.moduleDownloads[courseId][moduleId].progress = progress;
       }
+    },
+    setResourceDownloadStatus: (state, action) => {
+      const { courseId, resourceId, status, progress } = action.payload;
+      if (!state.resourceDownloads[courseId]) {
+        state.resourceDownloads[courseId] = {};
+      }
+      state.resourceDownloads[courseId][resourceId] = { status, progress };
+    },
+    updateResourceDownloadProgress: (state, action) => {
+      const { courseId, resourceId, progress } = action.payload;
+      if (state.resourceDownloads[courseId]?.[resourceId]) {
+        state.resourceDownloads[courseId][resourceId].progress = progress;
+      }
+      return state;
     }
   },
   extraReducers: (builder) => {
@@ -168,7 +220,9 @@ export const {
   setDownloadStatus, 
   updateDownloadProgress,
   setModuleDownloadStatus,
-  updateModuleDownloadProgress
+  updateModuleDownloadProgress,
+  setResourceDownloadStatus,
+  updateResourceDownloadProgress
 } = offlineSlice.actions;
 
 export default offlineSlice.reducer;

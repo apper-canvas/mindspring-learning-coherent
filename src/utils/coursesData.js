@@ -10,7 +10,21 @@ export const coursesData = [
     enrollments: 5642,
     rating: 4.8,
     imageUrl: "https://images.unsplash.com/photo-1579468118864-1b9ea3c0db4a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80",
-    progress: 0
+    progress: 0,
+    resources: [
+      {
+        id: "js-fundamentals-notes-1",
+        title: "JavaScript Basics",
+        type: "pdf",
+        size: 2.4
+      },
+      {
+        id: "js-fundamentals-slides-1",
+        title: "Introduction to JavaScript",
+        type: "slides",
+        size: 3.1
+      }
+    ]
   },
   {
     id: 2,
@@ -23,7 +37,27 @@ export const coursesData = [
     enrollments: 3211,
     rating: 4.9,
     imageUrl: "https://images.unsplash.com/photo-1633356122544-f134324a6cee?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80",
-    progress: 0
+    progress: 0,
+    resources: [
+      {
+        id: "react-redux-notes-1",
+        title: "Redux State Management",
+        type: "pdf",
+        size: 4.7
+      },
+      {
+        id: "react-redux-slides-1",
+        title: "Advanced React Patterns",
+        type: "slides",
+        size: 5.2
+      },
+      {
+        id: "react-redux-worksheet-1",
+        title: "State Management Exercise",
+        type: "worksheet",
+        size: 1.3
+      }
+    ]
   },
   {
     id: 3,
@@ -36,7 +70,21 @@ export const coursesData = [
     enrollments: 7823,
     rating: 4.7,
     imageUrl: "https://images.unsplash.com/photo-1526379095098-d400fd0bf935?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80",
-    progress: 0
+    progress: 0,
+    resources: [
+      {
+        id: "python-ds-notes-1",
+        title: "NumPy and Pandas Foundations",
+        type: "pdf",
+        size: 6.2
+      },
+      {
+        id: "python-ds-worksheet-1",
+        title: "Data Analysis Practice Dataset",
+        type: "worksheet",
+        size: 3.8
+      }
+    ]
   },
   {
     id: 4,

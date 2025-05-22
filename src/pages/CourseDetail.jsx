@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { toast } from 'react-toastify';
 import { getIcon } from '../utils/iconUtils';
 import { coursesData } from '../utils/coursesData';
+import CourseResources from '../components/CourseResources';
 
 // Icons
 const ArrowLeftIcon = getIcon('arrow-left');
@@ -19,6 +20,8 @@ const ShareIcon = getIcon('share');
 const GlobeIcon = getIcon('globe');
 const MessageCircleIcon = getIcon('message-circle');
 const BriefcaseIcon = getIcon('briefcase');
+const FileIcon = getIcon('file');
+const FileTextIcon = getIcon('file-text');
 const ChevronDownIcon = getIcon('chevron-down');
 
 const CourseDetail = () => {
@@ -226,6 +229,24 @@ const CourseDetail = () => {
           </div>
         </div>
       </div>
+      {/* Course Resources */}
+      {course.resources && course.resources.length > 0 && (
+        <div className="mb-12">
+          <div className="card">
+            <div className="p-6">
+              <h2 className="text-xl font-bold mb-4 flex items-center">
+                <FileTextIcon className="w-5 h-5 mr-2 text-primary" />
+                Course Resources
+              </h2>
+              <p className="text-surface-600 dark:text-surface-400 mb-6">
+                Download these materials to enhance your learning experience. These resources are available offline once downloaded.
+              </p>
+              <CourseResources courseId={course.id} resources={course.resources} />
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 };

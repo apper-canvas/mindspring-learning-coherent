@@ -1,12 +1,13 @@
 import { openDB } from 'idb';
 
 const DB_NAME = 'mindspring-offline';
-const DB_VERSION = 4;
+const DB_VERSION = 5;
 const COURSES_STORE = 'courses';
 const PROGRESS_STORE = 'progress';
 const BADGES_STORE = 'badges';
 const MODULE_PROGRESS_STORE = 'moduleProgress';
 const LEADERBOARD_STORE = 'leaderboards';
+const RESOURCES_STORE = 'resources';
 
 const initDB = async () => {
   return openDB(DB_NAME, DB_VERSION, {
@@ -30,6 +31,10 @@ const initDB = async () => {
       
       if (!db.objectStoreNames.contains(LEADERBOARD_STORE)) {
         db.createObjectStore(LEADERBOARD_STORE, { keyPath: 'id' });
+      }
+      
+      if (!db.objectStoreNames.contains(RESOURCES_STORE)) {
+        db.createObjectStore(RESOURCES_STORE, { keyPath: 'id' });
       }
     },
   });
@@ -239,4 +244,39 @@ export const getAllLeaderboards = async () => {
     console.error('Error fetching all leaderboards:', error);
     return [];
   }
+
+// Resource-related operations
+export const saveResource = async (resource) => {
+  try {
+    const db = await initDB();
+    await db.put(RESOURCES_STORE, {
+      ...resource,
+      downloadedAt: new Date().toISOString()
+    });
+    return true;
+  } catch (error) {
+    console.error('Error saving resource:', error);
+    return false;
+  }
+};
+
+export const getResource = async (resourceId) => {
+  try {
+    const db = await initDB();
+    return await db.get(RESOURCES_STORE, resourceId);
+  } catch (error) {
+    console.error(`Error fetching resource ${resourceId}:`, error);
+    return null;
+  }
+};
+
+export const getCourseResources = async (courseId) => {
+  try {
+    const db = await initDB();
+    return await db.getAll(RESOURCES_STORE).then(resources => resources.filter(r => r.courseId === courseId));
+  } catch (error) {
+    console.error(`Error fetching resources for course ${courseId}:`, error);
+    return [];
+  }
+};
 };

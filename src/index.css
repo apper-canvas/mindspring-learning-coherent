@@ -194,6 +194,24 @@
   
 }
 
+@layer components {
+  /* Resource item styles */
+  .resource-item {
+    @apply flex items-center p-3 rounded-lg border border-surface-200 dark:border-surface-700 
+           hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors;
+  }
+  
+  .resource-badge {
+    @apply text-xs font-semibold px-2 py-0.5 rounded uppercase;
+  }
+  
+  .resource-badge-pdf { @apply bg-resource-pdf/10 text-resource-pdf; }
+  .resource-badge-slides { @apply bg-resource-slides/10 text-resource-slides; }
+  .resource-badge-worksheet { @apply bg-resource-worksheet/10 text-resource-worksheet; }
+  .resource-badge-video { @apply bg-resource-video/10 text-resource-video; }
+}
+
+
 @layer utilities {
   .scrollbar-hide {
     -ms-overflow-style: none;

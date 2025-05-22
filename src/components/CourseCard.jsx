@@ -10,6 +10,7 @@ const ClockIcon = getIcon('clock');
 const BookOpenIcon = getIcon('book-open');
 const UsersIcon = getIcon('users');
 const StarIcon = getIcon('star');
+const FileIcon = getIcon('file');
 const DownloadIcon = getIcon('download');
 
 const CourseCard = ({ course }) => {
@@ -80,6 +81,11 @@ const CourseCard = ({ course }) => {
             <span className={`text-xs font-medium px-2 py-1 rounded-full ${getDifficultyColor(course.difficulty)}`}>
               {getDifficultyLabel(course.difficulty)}
             </span>
+            {course.resources?.length > 0 && (
+              <span className="absolute -bottom-7 right-0 bg-primary/10 text-primary text-xs font-medium px-2 py-1 rounded-full flex items-center">
+                <FileIcon className="w-3 h-3 mr-1" /> {course.resources.length} resources
+              </span>
+            )}
           </div>
         </div>
         

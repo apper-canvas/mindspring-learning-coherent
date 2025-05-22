@@ -35,6 +35,12 @@ export default {
           specialization: '#ec4899',
           master: '#7209b7'
         },
+        resource: {
+          pdf: '#ef4444',
+          slides: '#3b82f6',
+          worksheet: '#8b5cf6',
+          video: '#f97316'
+        },
         leaderboard: {
           gold: '#FFD700',
           silver: '#C0C0C0',
