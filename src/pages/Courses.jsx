@@ -7,15 +7,12 @@ import { getIcon } from '../utils/iconUtils';
 import { coursesData } from '../utils/coursesData';
 import CourseCard from '../components/CourseCard';
 
-const XIcon = getIcon('x');
 // Icons
+const XIcon = getIcon('x');
 const SearchIcon = getIcon('search');
-  const [searchParams, setSearchParams] = useSearchParams();
-  const categoryParam = searchParams.get('category');
 const FilterIcon = getIcon('filter');
 const SlidersIcon = getIcon('sliders');
 const BookOpenIcon = getIcon('book-open');
-const XIcon = getIcon('x');
 
 const Courses = () => {
   const [courses, setCourses] = useState([]);
@@ -23,12 +20,11 @@ const Courses = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState('all');
-    const matchesCategory = categoryParam ? course.categories.includes(categoryParam) : true;
   const [selectedDifficulty, setSelectedDifficulty] = useState('all');
-    return matchesSearch && matchesCategory;
-  });
+  const [showFilters, setShowFilters] = useState(false);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const categoryParam = searchParams.get('category');
   
-  // Clear category filter
   const clearCategoryFilter = () => {
     setSearchParams({});
 
@@ -79,17 +75,17 @@ const Courses = () => {
     // Filter by category
     if (selectedCategory !== 'all') {
         
-        {categoryParam && (
-          <div className="mt-3 flex items-center">
-            <span className="text-surface-600 dark:text-surface-400">Filtered by category: </span>
-            <span className="ml-2 px-3 py-1 bg-primary/10 text-primary rounded-full flex items-center">
-              {categoryParam.charAt(0).toUpperCase() + categoryParam.slice(1).replace('-', ' ')}
-              <button onClick={clearCategoryFilter} className="ml-2" aria-label="Clear filter">
-                <XIcon className="w-4 h-4" />
-              </button>
-            </span>
-          </div>
-        )}
+      result = result.filter(course => course.category === selectedCategory);
+    }
+    
+    // Filter by category param from URL if present
+    if (categoryParam) {
+      result = result.filter(course => {
+        if (course.categories) {
+          return course.categories.includes(categoryParam);
+        }
+        return course.category === categoryParam;
+      });
       result = result.filter(course => course.category === selectedCategory);
     }
 
@@ -110,7 +106,7 @@ const Courses = () => {
     }
 
     setFilteredCourses(result);
-  }, [courses, selectedCategory, selectedDifficulty, searchTerm]);
+  }, [courses, selectedCategory, selectedDifficulty, searchTerm, categoryParam]);
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -166,6 +162,17 @@ const Courses = () => {
         </div>
 
         {/* Filters Panel */}
+        {categoryParam && (
+          <div className="mt-3 flex items-center">
+            <span className="text-surface-600 dark:text-surface-400">Filtered by category: </span>
+            <span className="ml-2 px-3 py-1 bg-primary/10 text-primary rounded-full flex items-center">
+              {categoryParam.charAt(0).toUpperCase() + categoryParam.slice(1).replace('-', ' ')}
+              <button onClick={clearCategoryFilter} className="ml-2" aria-label="Clear filter">
+                <XIcon className="w-4 h-4" />
+              </button>
+            </span>
+          </div>
+        )}
         {showFilters && (
           <motion.div 
             initial={{ opacity: 0, height: 0 }}
