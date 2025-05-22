@@ -356,6 +356,8 @@ const Community = () => {
     }
   };
   
+  return (
+    <>
         {/* Main content layout - 2 columns on larger screens */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Left column - Discussions */}
