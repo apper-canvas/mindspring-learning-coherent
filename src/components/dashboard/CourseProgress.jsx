@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { getCourseById } from '../../services/courseService';
@@ -6,17 +7,14 @@ import { formatDashboardDate } from '../../utils/dashboardUtils';
 
 // Icons
 const PlayIcon = getIcon('play');
+const CheckCircleIcon = getIcon('check-circle');
 const ClockIcon = getIcon('clock');
-const CourseProgress = ({ courses = [], loading }) => {
 const ArrowRightIcon = getIcon('arrow-right');
-  const [courseDetails, setCourseDetails] = useState({});
 const BarChartIcon = getIcon('bar-chart-2');
 
-const CourseProgress = ({ courses, loading }) => {
-  if (loading) {
-    return (
-      <div className="p-6 bg-white dark:bg-surface-800 rounded-xl shadow-card border border-surface-200 dark:border-surface-700">
-        <h2 className="text-xl font-bold mb-6 text-surface-900 dark:text-white">Your Courses</h2>
+const CourseProgress = ({ courses = [], loading }) => {
+  const [courseDetails, setCourseDetails] = useState({});
+
   // Load course details for the enrolled courses
   useEffect(() => {
     const loadCourseDetails = async () => {
@@ -42,6 +40,10 @@ const CourseProgress = ({ courses, loading }) => {
     loadCourseDetails();
   }, [courses]);
 
+  if (loading) {
+    return (
+      <div className="p-6 bg-white dark:bg-surface-800 rounded-xl shadow-card border border-surface-200 dark:border-surface-700">
+        <h2 className="text-xl font-bold mb-6 text-surface-900 dark:text-white">Your Courses</h2>
         <div className="space-y-4">
           {[1, 2, 3].map((i) => (
             <div key={i} className="animate-pulse">
@@ -73,51 +75,45 @@ const CourseProgress = ({ courses, loading }) => {
     <div className="p-6 bg-white dark:bg-surface-800 rounded-xl shadow-card border border-surface-200 dark:border-surface-700">
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-xl font-bold text-surface-900 dark:text-white">Your Courses</h2>
-              const details = courseDetails[course.courseId] || {};
-              
         <Link to="/courses" className="text-primary hover:text-primary-dark text-sm font-medium flex items-center">
-                <motion.button
-                  key={course.Id}
+          View All Courses <ArrowRightIcon className="ml-1 w-4 h-4" />
+        </Link>
       </div>
-      
       <div className="space-y-6">
         {courses.map((course) => (
           <motion.div 
             key={course.id}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-                    src={details.imageUrl || "https://placehold.co/400x250?text=Course"}
-                    alt={details.title || "Course"}
           >
             <div className="flex items-center p-4 bg-surface-50 dark:bg-surface-700 border-b border-surface-200 dark:border-surface-600">
               <img 
-                    <h4 className="font-medium text-sm">{details.title || course.Name || "Course"}</h4>
-                alt={course.title} 
+                src={(courseDetails[course.courseId]?.imageUrl) || "https://placehold.co/400x250?text=Course"} 
+                alt={(courseDetails[course.courseId]?.title) || course.title || "Course"} 
                 className="w-12 h-12 object-cover rounded-md mr-4"
               />
               <div className="flex-grow">
-                <h3 className="font-medium text-surface-900 dark:text-white">{course.title}</h3>
+                <h3 className="font-medium text-surface-900 dark:text-white">
+                  {(courseDetails[course.courseId]?.title) || course.title || course.Name || "Course"}
+                </h3>
                 <p className="text-sm text-surface-600 dark:text-surface-400">
                   <span className="inline-flex items-center">
                     <ClockIcon className="w-3 h-3 mr-1" />
                     Last accessed: {formatDashboardDate(course.lastAccessed)}
                   </span>
-                </motion.button>
+                </p>
               </div>
               <div className="flex space-x-2">
-              <button className="btn-primary-outline text-sm py-1.5 px-3 flex items-center" title="Continue learning">
-                <PlayIcon className="w-4 h-4 mr-1.5" />
-                <span className="hidden sm:inline">Resume</span>
-              </button>
-              <Link to={`/dashboard?tab=progress&course=${course.id}`} className="btn-ghost text-sm py-1.5 px-3 flex items-center" title="View detailed progress">
-                <BarChartIcon className="w-4 h-4 mr-1.5 sm:mr-0" /> <span className="hidden sm:inline">Progress</span>
-            {/* Get details for the active course */}
-            {const activeDetails = courseDetails[activeCourse.courseId] || {}}
+                <button className="btn-primary-outline text-sm py-1.5 px-3 flex items-center" title="Continue learning">
+                  <PlayIcon className="w-4 h-4 mr-1.5" />
+                  <span className="hidden sm:inline">Resume</span>
+                </button>
+                <Link to={`/dashboard?tab=progress&course=${course.id}`} className="btn-ghost text-sm py-1.5 px-3 flex items-center" title="View detailed progress">
+                  <BarChartIcon className="w-4 h-4 mr-1.5 sm:mr-0" /> <span className="hidden sm:inline">Progress</span>
               </Link>
-              <h3 className="text-xl font-bold">{activeDetails.title || activeCourse.Name || "Course"}</h3>
             </div>
-                to={`/courses/${activeCourse.courseId}`}
-               <div className="flex items-center justify-between mb-2">
+            <div className="p-4">
+              <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium text-surface-700 dark:text-surface-300">
                   Progress: {course.progress}%
                 </span>
@@ -126,13 +122,13 @@ const CourseProgress = ({ courses, loading }) => {
                     <CheckCircleIcon className="w-4 h-4 mr-1" /> Completed
                   </span>
                 )}
-                  <PlayIcon className="w-4 h-4 mr-1 text-primary" /> {"Continue where you left off"}
+              </div>
               <div className="w-full bg-surface-200 dark:bg-surface-600 rounded-full h-2.5">
                 <motion.div 
-                initial={{ width: 0 }}
-                animate={{ width: `${course.progress}%` }} 
-                transition={{ duration: 0.5, ease: "easeOut" }}
-                className="bg-primary h-2.5 rounded-full"
+                  initial={{ width: 0 }}
+                  animate={{ width: `${course.progress}%` }} 
+                  transition={{ duration: 0.5, ease: "easeOut" }}
+                  className="bg-primary h-2.5 rounded-full"
                 />
               </div>
             </div>
