@@ -321,6 +321,7 @@ const Community = () => {
               View All Topics
             </button>
         </div>
+      </div>
       </div> {/* End of grid layout */}
         {/* Create Post Modal - Moved outside the grid layout */}
         {isCreateModalOpen && (
