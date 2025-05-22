@@ -13,6 +13,7 @@ const XIcon = getIcon('x');
 const SearchIcon = getIcon('search');
 const FilterIcon = getIcon('filter');
 const SlidersIcon = getIcon('sliders');
+const PlusIcon = getIcon('plus');
 const BookOpenIcon = getIcon('book-open');
 
 import { getCourses } from '../services/courseService';
@@ -159,6 +160,21 @@ const Courses = () => {
           </div>
           
           <div className="flex items-center space-x-3">
+            {isAuthenticated && (
+              <Link 
+                to="/courses/create" 
+                className="btn-primary flex items-center"
+                aria-label="Create new course"
+              >
+                <PlusIcon className="w-5 h-5 mr-1" />
+                <span className="hidden md:inline">
+                  Create Course
+                </span>
+                <span className="inline md:hidden">
+                  Add
+                </span>
+              </Link>
+            )}
             <form onSubmit={handleSearch} className="relative flex-grow">
               <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-surface-400 w-5 h-5" />
               <input
