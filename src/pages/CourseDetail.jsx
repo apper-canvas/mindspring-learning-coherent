@@ -1,9 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
 import { motion } from 'framer-motion';
 import { toast } from 'react-toastify';
 import { getIcon } from '../utils/iconUtils';
-import { coursesData } from '../utils/coursesData';
+
+// Services
+import { getCourseById } from '../services/courseService';
+import { enrollUserInCourse, isUserEnrolled } from '../services/userCourseService';
 import CourseResources from '../components/CourseResources';
 
 // Icons
@@ -25,14 +29,17 @@ const FileTextIcon = getIcon('file-text');
 const ChevronDownIcon = getIcon('chevron-down');
 
 const CourseDetail = () => {
-  const { id } = useParams();
+  const { id: courseId } = useParams();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [course, setCourse] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [expandedSection, setExpandedSection] = useState('section1');
   const [relatedCourses, setRelatedCourses] = useState([]);
   const [isEnrolling, setIsEnrolling] = useState(false);
+  const [isEnrolled, setIsEnrolled] = useState(false);
+  const { isAuthenticated, user } = useSelector(state => state.user);
   const [isDownloading, setIsDownloading] = useState(false);
 
   useEffect(() => {
@@ -40,18 +47,27 @@ const CourseDetail = () => {
       setLoading(true);
       try {
         // In a real app, this would be an API call
-        const foundCourse = coursesData.find(c => c.id === parseInt(id));
+        const foundCourse = await getCourseById(courseId);
         if (!foundCourse) {
-          setError('Course not found');
-          return;
+          throw new Error('Course not found');
         }
         
         setCourse(foundCourse);
         
-        // Get related courses based on category
-        const related = coursesData
-          .filter(c => c.category === foundCourse.category && c.id !== foundCourse.id)
-          .slice(0, 3);
+        // Check if user is enrolled
+        if (isAuthenticated && user) {
+          const enrolled = await isUserEnrolled(user.userId, courseId);
+          setIsEnrolled(enrolled);
+        }
+        
+        // Get related courses
+        // This would normally be a separate API call with filters
+        if (foundCourse.category) {
+          // TODO: Get related courses based on category
+          return;
+        
+        // For now just use hardcoded data
+        setRelatedCourses([]);
         setRelatedCourses(related);
       } catch (error) {
         setError('Failed to load course details');
@@ -61,25 +77,43 @@ const CourseDetail = () => {
       }
     };
 
-    fetchCourseDetails();
-  }, [id]);
+    if (courseId) {
+      fetchCourseDetails();
+    }
+  }, [courseId, isAuthenticated, user]);
 
-  const handleEnroll = () => {
+  const handleEnroll = async () => {
+    if (!isAuthenticated) {
+      navigate(`/login?redirect=/courses/${courseId}`);
+      return;
+    }
+    
+    if (isEnrolled) {
+      // Already enrolled, navigate to dashboard or course content
+      navigate('/dashboard');
+      return;
+    }
+    
     setIsEnrolling(true);
-    // Simulate API call
-    setTimeout(() => {
-      toast.success(`Successfully enrolled in ${course.title}!`);
+    
+    try {
+      await enrollUserInCourse(user.userId, courseId);
+      toast.success(`Successfully enrolled in ${course.title || course.Name}!`);
+      setIsEnrolled(true);
+      // Optionally navigate to dashboard or course content
+    } catch (error) {
+      console.error('Enrollment error:', error);
+      toast.error('Failed to enroll in course. Please try again.');
+    } finally {
       setIsEnrolling(false);
-    }, 1000);
+    }
   };
 
   const handleDownload = () => {
     setIsDownloading(true);
-    // Simulate download
-    setTimeout(() => {
-      toast.success(`${course.title} is now available offline`);
-      setIsDownloading(false);
-    }, 1500);
+    // TODO: Implement offline download logic using IndexedDB
+    toast.info('This functionality is not yet implemented.');
+    setIsDownloading(false);
   };
 
   const toggleSection = (sectionId) => {
@@ -158,7 +192,7 @@ const CourseDetail = () => {
                 <ClockIcon className="w-4 h-4 mr-1" /> {course.duration}
               </span>
             </div>
-            <h1 className="text-3xl md:text-4xl font-bold mb-4">{course.title}</h1>
+            <h1 className="text-3xl md:text-4xl font-bold mb-4">{course.title || course.Name}</h1>
             <p className="text-lg text-surface-700 dark:text-surface-300 mb-4">{course.description}</p>
             <div className="flex items-center mb-6">
               <div className="flex items-center mr-4">
@@ -188,7 +222,7 @@ const CourseDetail = () => {
           <div className="md:w-1/3">
             <div className="card sticky top-6">
               <img 
-                src={course.imageUrl} 
+                src={course.imageUrl || `https://images.unsplash.com/photo-1501504905252-473c47e087f8?q=80&w=500`} 
                 alt={course.title} 
                 className="w-full aspect-video object-cover"
               />
@@ -199,7 +233,7 @@ const CourseDetail = () => {
                 </div>
                 <div className="space-y-3 mb-6">
                   <button onClick={handleEnroll} disabled={isEnrolling} className="btn-primary w-full py-3">
-                    {isEnrolling ? 'Enrolling...' : 'Enroll Now'}
+                    {isEnrolling ? 'Enrolling...' : isEnrolled ? 'Go to Course' : 'Enroll Now'}
                   </button>
                   <button onClick={handleDownload} disabled={isDownloading} className="btn-outline w-full py-3 flex items-center justify-center">
                     {isDownloading ? 'Downloading...' : (
@@ -229,8 +263,8 @@ const CourseDetail = () => {
           </div>
         </div>
       </div>
-      {/* Course Resources */}
-      {course.resources && course.resources.length > 0 && (
+      {/* Course Resources - In a real app, we would fetch resources for this course */}
+      {false && (
         <div className="mb-12">
           <div className="card">
             <div className="p-6">
@@ -241,7 +275,7 @@ const CourseDetail = () => {
               <p className="text-surface-600 dark:text-surface-400 mb-6">
                 Download these materials to enhance your learning experience. These resources are available offline once downloaded.
               </p>
-              <CourseResources courseId={course.id} resources={course.resources} />
+              <CourseResources courseId={course.Id} resources={[]} />
             </div>
           </div>
         </div>

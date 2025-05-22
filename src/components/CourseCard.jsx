@@ -1,8 +1,12 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { toast } from 'react-toastify';
+import { useSelector, useDispatch } from 'react-redux';
 import { getIcon } from '../utils/iconUtils';
+
+// Services
+import { enrollUserInCourse } from '../services/userCourseService';
 
 // Icons
 const UserIcon = getIcon('user');
@@ -16,6 +20,10 @@ const DownloadIcon = getIcon('download');
 const CourseCard = ({ course }) => {
   const [isEnrolling, setIsEnrolling] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { isAuthenticated, user } = useSelector(state => state.user);
+  const isOnline = useSelector(state => state.offline.isOnline);
   
   const getDifficultyColor = (difficulty) => {
     switch(difficulty) {
@@ -43,43 +51,62 @@ const CourseCard = ({ course }) => {
     }
   };
 
-  const handleEnroll = () => {
+  const handleEnroll = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (!isAuthenticated) {
+      navigate(`/login?redirect=/courses/${course.Id}`);
+      return;
+    }
+    
     setIsEnrolling(true);
-    // Simulate API call
-    setTimeout(() => {
+    
+    try {
+      await enrollUserInCourse(user.userId, course.Id);
       toast.success(`Successfully enrolled in ${course.title}!`);
+      navigate(`/courses/${course.Id}`);
+    } catch (error) {
+      console.error('Enrollment error:', error);
+      toast.error('Failed to enroll in course. Please try again.');
+    } finally {
       setIsEnrolling(false);
-    }, 1000);
+    }
   };
 
   const handleDownload = (e) => {
     e.preventDefault();
     e.stopPropagation();
     setIsDownloading(true);
-    // Simulate download
-    setTimeout(() => {
+    
+    try {
+      // TODO: Implement offline download logic using IndexedDB
       toast.success(`${course.title} is now available offline`);
+    } catch (error) {
+      toast.error('Failed to download course for offline use.');
+    } finally {
       setIsDownloading(false);
-    }, 1500);
+    }
   };
 
   return (
-    <Link to={`/courses/${course.id}`} className="block h-full">
+    <Link to={`/courses/${course.Id}`} className="block h-full">
       <motion.div
         whileHover={{ y: -5 }}
         transition={{ duration: 0.2 }}
         className="card overflow-hidden flex flex-col h-full"
-      >
-        {/* Course Image */}
+            src={course.imageUrl || `https://images.unsplash.com/photo-1501504905252-473c47e087f8?q=80&w=500`} 
+            alt={course.title || course.Name} 
         <div className="relative">
           <img 
             src={course.imageUrl} 
             alt={course.title} 
             className="w-full h-48 object-cover"
           />
-          <div className="absolute top-3 right-3">
+            {/* Removed resources badge as it's not directly available in the API response */}
+            {false && (
             <span className={`text-xs font-medium px-2 py-1 rounded-full ${getDifficultyColor(course.difficulty)}`}>
-              {getDifficultyLabel(course.difficulty)}
+                <FileIcon className="w-3 h-3 mr-1" /> resources
             </span>
             {course.resources?.length > 0 && (
               <span className="absolute -bottom-7 right-0 bg-primary/10 text-primary text-xs font-medium px-2 py-1 rounded-full flex items-center">
@@ -91,8 +118,8 @@ const CourseCard = ({ course }) => {
         
         {/* Course Content */}
         <div className="p-5 flex-grow flex flex-col">
-          <h3 className="text-lg font-semibold mb-2 line-clamp-2">{course.title}</h3>
-          
+          <h3 className="text-lg font-semibold mb-2 line-clamp-2">{course.title || course.Name}</h3>
+
           <div className="flex items-center mb-3 text-sm text-surface-600 dark:text-surface-400">
             <UserIcon className="w-4 h-4 mr-1" />
             <span>{course.instructor}</span>
@@ -104,7 +131,7 @@ const CourseCard = ({ course }) => {
           <p className="text-sm text-surface-600 dark:text-surface-400 mb-4 line-clamp-3">{course.description}</p>
           
           <div className="flex items-center justify-between mt-auto">
-            <div className="flex items-center">
+            <div className="flex items-center text-sm">
               <StarIcon className="w-4 h-4 text-yellow-500 mr-1" />
               <span className="text-sm font-medium">{course.rating}</span>
               <span className="mx-2 text-surface-400">•</span>
@@ -117,12 +144,12 @@ const CourseCard = ({ course }) => {
         {/* Course Actions */}
         <div className="px-5 pb-5 pt-2 border-t border-surface-200 dark:border-surface-700 flex justify-between">
           <button 
-            onClick={(e) => {e.preventDefault(); handleEnroll();}} 
+            onClick={handleEnroll} 
             disabled={isEnrolling} 
             className="btn-primary text-sm py-1.5">
             {isEnrolling ? 'Enrolling...' : 'Enroll Now'}
           </button>
-          <button onClick={(e) => {e.preventDefault(); handleDownload(e);}} disabled={isDownloading} className="btn-ghost text-sm py-1.5">
+          <button onClick={handleDownload} disabled={isDownloading || !isOnline} className="btn-ghost text-sm py-1.5">
             {isDownloading ? (
               <span className="flex items-center">Downloading...</span>
             ) : (

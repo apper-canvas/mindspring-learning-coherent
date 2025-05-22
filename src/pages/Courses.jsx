@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useSearchParams } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import { getIcon } from '../utils/iconUtils';
 import { coursesData } from '../utils/coursesData';
@@ -14,20 +15,20 @@ const FilterIcon = getIcon('filter');
 const SlidersIcon = getIcon('sliders');
 const BookOpenIcon = getIcon('book-open');
 
+import { getCourses } from '../services/courseService';
+
 const Courses = () => {
   const [courses, setCourses] = useState([]);
   const [filteredCourses, setFilteredCourses] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedDifficulty, setSelectedDifficulty] = useState('all');
   const [showFilters, setShowFilters] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
   const categoryParam = searchParams.get('category');
-  
-  const clearCategoryFilter = () => {
-    setSearchParams({});
-  };
+  const isAuthenticated = useSelector(state => state.user.isAuthenticated);
 
   const categories = [
     { id: 'all', name: 'All Categories' },
@@ -49,25 +50,38 @@ const Courses = () => {
     { id: 'advanced', name: 'Advanced' },
   ];
 
+  const clearCategoryFilter = () => {
+    setSearchParams({});
+  };
+
   useEffect(() => {
-    // Simulate loading courses from an API
-    const loadCourses = async () => {
+    // Load courses from the API
+    const fetchCourses = async () => {
       setLoading(true);
+      setError(null);
+      
       try {
-        // In a real app, this would be an API call
-        // await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate network delay
+        const filters = {};
+        
+        // If category is specified in URL, add it to filters
+        if (categoryParam) {
+          filters.category = categoryParam;
+        }
+        
+        const coursesData = await getCourses(filters);
         setCourses(coursesData);
         setFilteredCourses(coursesData);
       } catch (error) {
+        setError('Failed to load courses. Please try again later.');
         toast.error('Failed to load courses. Please try again later.');
         console.error('Error loading courses:', error);
       } finally {
         setLoading(false);
       }
     };
+    fetchCourses();
+  }, [categoryParam]);
 
-    loadCourses();
-  }, []);
 
   useEffect(() => {
     // Apply filters whenever filter criteria changes
@@ -131,6 +145,10 @@ const Courses = () => {
     <div className="container mx-auto px-4 py-8">
       {/* Courses Header */}
       <section className="mb-8">
+  if (error) {
+    return <div className="container mx-auto px-4 py-8 text-center">Error: {error}</div>;
+  }
+
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
           <div>
             <h1 className="text-3xl font-bold text-surface-900 dark:text-white mb-2">Explore Courses</h1>
@@ -230,19 +248,37 @@ const Courses = () => {
       {/* Courses Grid */}
       <section>
         {loading ? (
-          <div className="text-center py-12">Loading courses...</div>
-        ) : filteredCourses.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredCourses.map(course => (
-              <CourseCard key={course.id} course={course} />
-            ))}
+          <div className="text-center py-12">
+            <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary mb-4"></div>
+            <p>Loading courses...</p>
           </div>
+        ) : filteredCourses.length > 0 ? (
+          <AnimatePresence>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredCourses.map(course => (
+                <motion.div
+                  key={course.Id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <CourseCard key={course.Id} course={course} />
+                </motion.div>
+              ))}
+            </div>
+          </AnimatePresence>
         ) : (
           <div className="text-center py-12 bg-surface-50 dark:bg-surface-800 rounded-xl">
             <BookOpenIcon className="w-12 h-12 mx-auto text-surface-400 mb-4" />
             <h3 className="text-xl font-semibold mb-2">No courses found</h3>
             <p className="text-surface-600 dark:text-surface-400 mb-4">Try adjusting your filters or search term</p>
-            <button onClick={clearFilters} className="btn-primary">Clear Filters</button>
+            <button 
+              onClick={clearFilters} 
+              className="btn-primary"
+            >
+              Clear Filters
+            </button>
           </div>
         )}
       </section>
