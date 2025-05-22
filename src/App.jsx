@@ -12,6 +12,7 @@ import './utils/leaderboardUtils';
 import Home from './pages/Home';
 import NotFound from './pages/NotFound';
 import Explore from './pages/Explore';
+import Community from './pages/Community';
 import Courses from './pages/Courses';
 
 // Components
@@ -84,6 +85,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/courses" element={<Courses />} />
           <Route path="/explore" element={<Explore />} />
+          <Route path="/community" element={<Community />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </AnimatePresence>
