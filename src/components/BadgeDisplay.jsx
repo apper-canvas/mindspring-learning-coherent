@@ -1,51 +1,44 @@
 import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSelector } from 'react-redux';
-import { getBadgeIcon, getBadgeLevelClass } from '../utils/badgeUtils';
+import { getBadgeIcon, getBadgeLevelClass, getIcon } from '../utils/badgeUtils';
 import { getAllBadges } from '../services/badgeService';
 import Confetti from 'react-confetti';
 
-  const reduxBadges = useSelector(state => state.badges.badges);
-  displayMode = 'grid', // 'grid', 'list', or 'single'
-  badge = null,         // required for 'single' mode
-  showDetails = false,  // whether to show badge details
-  onBadgeClick = null,  // callback when a badge is clicked
-  className = '',       // additional classes
-  limit = 0             // limit number of badges (0 = no limit)
+const BadgeDisplay = ({
+  displayMode = 'grid',  // 'grid', 'list', or 'single'
+  badge = null,          // required for 'single' mode
+  showDetails = false,   // whether to show badge details
+  onBadgeClick = null,   // callback when a badge is clicked
+  className = '',        // additional classes
+  limit = 0              // limit number of badges (0 = no limit)
 }) => {
   const allBadges = useSelector(state => state.badges.badges);
   const [showConfetti, setShowConfetti] = useState(false);
   const [selectedBadge, setSelectedBadge] = useState(null);
-  // Combine badges from Redux with any additional data needed
-  const badges = useMemo(() => {
-    return reduxBadges.map(badge => ({
-      ...badge,
-      dateEarned: badge.earnedAt || new Date().toISOString(),
-      title: badge.Name,
-      description: badge.description || "Achievement unlocked"
-    }));
-  }, [reduxBadges]);
-
   const [badges, setBadges] = useState([]);
 
-    return getIcon(iconName || 'award');
   useEffect(() => {
     if (displayMode !== 'single') {
       // For grid/list mode, get badges from Redux store
       let filteredBadges = [...allBadges];
-    if (!level) {
-      return "bg-bronze text-bronze-dark";
-    }
       
       // Apply limit if needed
       if (limit > 0) {
         filteredBadges = filteredBadges.slice(0, limit);
       }
       
-      setBadges(filteredBadges);
+      const processedBadges = filteredBadges.map(badge => ({
+        ...badge,
+        dateEarned: badge.earnedAt || new Date().toISOString(),
+        title: badge.Name,
+        description: badge.description || "Achievement unlocked"
+      }));
+      
+      setBadges(processedBadges);
       
       // Check for new badges to trigger confetti
-      const newBadges = filteredBadges.filter(b => b.isNew);
+      const newBadges = processedBadges.filter(b => b.isNew);
       if (newBadges.length > 0) {
         setShowConfetti(true);
         // Hide confetti after 3 seconds
@@ -53,15 +46,20 @@ import Confetti from 'react-confetti';
       }
     } else if (badge) {
       // For single mode, use the provided badge
-      setBadges([badge]);
+      setBadges([{
+        ...badge,
+        dateEarned: badge.earnedAt || new Date().toISOString(),
+        title: badge.Name,
+        description: badge.description || "Achievement unlocked"
+      }]);
     }
   }, [allBadges, displayMode, badge, limit]);
 
   const handleBadgeClick = (badge) => {
-  if (badges.length === 0) {
     if (onBadgeClick) onBadgeClick(badge);
+    setSelectedBadge(badge.id === selectedBadge?.id ? null : badge);
   };
-        <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
+
   // Helper to render a single badge
   const renderBadge = (badge, index) => {
     const BadgeIcon = getBadgeIcon(badge.icon);
@@ -69,7 +67,7 @@ import Confetti from 'react-confetti';
     
     return (
       <motion.div
-        key={badge.id}
+        key={badge.id || index}
         initial={badge.isNew ? { scale: 0 } : { scale: 1 }}
         animate={{ scale: 1 }}
         whileHover={{ scale: 1.05 }}
@@ -86,7 +84,7 @@ import Confetti from 'react-confetti';
         
         {/* Badge Info */}
         <div className={displayMode === 'list' ? 'ml-3' : 'text-center'}>
-          <h4 className="font-medium text-sm">{badge.name}</h4>
+          <h4 className="font-medium text-sm">{badge.name || badge.title}</h4>
           {(displayMode === 'list' || showDetails || selectedBadge?.id === badge.id) && (
             <p className="text-xs text-surface-600 dark:text-surface-400 mt-1">{badge.description}</p>
           )}
@@ -98,7 +96,7 @@ import Confetti from 'react-confetti';
           {(showDetails || selectedBadge?.id === badge.id) && (
             <div className="mt-2 text-xs text-surface-500 dark:text-surface-400">
               <p>{badge.points} points</p>
-              <p>Earned: {new Date(badge.earnedAt).toLocaleDateString()}</p>
+              <p>Earned: {new Date(badge.earnedAt || badge.dateEarned).toLocaleDateString()}</p>
               {badge.courseTitle && <p>Course: {badge.courseTitle}</p>}
             </div>
           )}
@@ -120,7 +118,7 @@ import Confetti from 'react-confetti';
       )}
       
       {displayMode === 'single' && badges.length > 0 ? (
-        renderBadge(badges[0])
+        renderBadge(badges[0], 0)
       ) : (
         <div 
           className={displayMode === 'grid' 
@@ -129,7 +127,7 @@ import Confetti from 'react-confetti';
           }
         >
           {badges.length > 0 ? (
-            badges.map(renderBadge)
+            badges.map((badge, index) => renderBadge(badge, index))
           ) : (
             <div className="text-center col-span-full py-6 text-surface-500 dark:text-surface-400">
               No badges earned yet. Complete courses and quizzes to earn badges!
