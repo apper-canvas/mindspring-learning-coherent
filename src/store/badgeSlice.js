@@ -127,3 +127,6 @@ const badgeSlice = createSlice({
 });
 
 export default badgeSlice.reducer;
+
+// Export alias for backward compatibility
+export const fetchBadges = fetchUserBadges;

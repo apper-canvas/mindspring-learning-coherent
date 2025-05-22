@@ -7,7 +7,7 @@ import { getIcon } from '../utils/iconUtils';
 import DownloadManager from './DownloadManager';
 import BadgeDisplay from './BadgeDisplay';
 import LeaderboardDisplay from './LeaderboardDisplay';
-import { checkAndAwardBadge, fetchBadges } from '../store/badgeSlice';
+import { checkAndAwardBadge, fetchUserBadges as fetchBadges } from '../store/badgeSlice';
 
 // Icons
 const PlayIcon = getIcon('play');
@@ -129,7 +129,7 @@ const MainFeature = () => {
       quizTotal: 0,
       completedLessonsOffline: 0
     };
-    dispatch(checkAndAwardBadge({ badgeType: 'FIRST_STEP', userState, courseId: 1, courseTitle: 'JavaScript Fundamentals' }));
+    dispatch(checkAndAwardBadge({ badgeTypeKey: 'FIRST_STEP', courseId: 1, courseTitle: 'JavaScript Fundamentals' }));
   }, [isOnline]);
 
   // Calculate overall course progress
@@ -202,15 +202,15 @@ const MainFeature = () => {
     };
     
     // Award appropriate badges
-    dispatch(checkAndAwardBadge({ badgeType: 'FIRST_LESSON', userState, courseId: 1, courseTitle: 'JavaScript Fundamentals' }));
+    dispatch(checkAndAwardBadge({ badgeTypeKey: 'FIRST_LESSON', courseId: 1, courseTitle: 'JavaScript Fundamentals' }));
     
     // Check for course progress badges
     if (userState.courseProgress >= 50) {
-      dispatch(checkAndAwardBadge({ badgeType: 'HALFWAY', userState, courseId: 1, courseTitle: 'JavaScript Fundamentals' }));
+      dispatch(checkAndAwardBadge({ badgeTypeKey: 'HALFWAY', courseId: 1, courseTitle: 'JavaScript Fundamentals' }));
     }
     
     if (userState.courseProgress === 100) {
-      dispatch(checkAndAwardBadge({ badgeType: 'COURSE_COMPLETE', userState, courseId: 1, courseTitle: 'JavaScript Fundamentals' }));
+      dispatch(checkAndAwardBadge({ badgeTypeKey: 'COURSE_COMPLETE', courseId: 1, courseTitle: 'JavaScript Fundamentals' }));
     }
   }, [lessons, offlineMode, dispatch]);
 
@@ -271,7 +271,7 @@ const MainFeature = () => {
       
       // Award perfect quiz badge if all answers were correct
       if (userState.quizScore === userState.quizTotal) {
-        dispatch(checkAndAwardBadge({ badgeType: 'QUIZ_MASTER', userState, courseId: 1, courseTitle: 'JavaScript Fundamentals' }));
+        dispatch(checkAndAwardBadge({ badgeTypeKey: 'QUIZ_MASTER', courseId: 1, courseTitle: 'JavaScript Fundamentals' }));
       }
       
     }
