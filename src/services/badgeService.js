@@ -130,3 +130,36 @@ export const awardBadgeToUser = async (userId, badgeId, courseId = null, courseT
     throw error;
   }
 };
+
+// Update a user badge (mark as viewed, etc.)
+export const updateBadge = async (userId, badgeId, updates) => {
+  try {
+    const { ApperClient } = window.ApperSDK;
+    const apperClient = new ApperClient({
+      apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
+      apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
+    });
+
+    // Get the badge to ensure it exists and belongs to the user
+    const params = {
+      records: [{
+        Id: badgeId,
+        ...updates
+      }]
+    };
+
+    const response = await apperClient.updateRecord("user_badge", params);
+    
+    if (response && response.success) {
+      return {
+        success: true,
+        data: response.data
+      };
+    } else {
+      return { success: false, message: "Failed to update badge" };
+    }
+  } catch (error) {
+    console.error(`Error updating badge ${badgeId}:`, error);
+    return { success: false, message: error.message || "An error occurred" };
+  }
+};
