@@ -295,6 +295,8 @@ const Community = () => {
                 </div>
               )}
             </div>
+          </div>
+
         {/* Right column - Community sidebar */}
         <div className="space-y-6">
           {/* Trending topics */}
@@ -319,7 +321,6 @@ const Community = () => {
             </button>
           </div>
         </div>
-      </div>
       
       {/* Create Post Modal - Moved outside the grid layout */}
       {isCreateModalOpen && (
@@ -387,7 +388,6 @@ const Community = () => {
             </motion.div>
           </div>
       )}
-      </div>
     </div>
   );
 };
