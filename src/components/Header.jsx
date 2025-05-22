@@ -16,6 +16,7 @@ const AwardIcon = getIcon('award');
 const WifiOffIcon = getIcon('wifi-off');
 const UserIcon = getIcon('user');
 const LogOutIcon = getIcon('log-out');
+const SettingsIcon = getIcon('settings');
 
 const Header = ({ darkMode, toggleDarkMode, isAuthenticated }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -112,11 +113,13 @@ const Header = ({ darkMode, toggleDarkMode, isAuthenticated }) => {
                 </button>
                 <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-surface-800 rounded-md shadow-lg overflow-hidden z-20 opacity-0 scale-95 translate-y-0 invisible group-hover:opacity-100 group-hover:scale-100 group-hover:translate-y-0 group-hover:visible transition-all duration-200 origin-top-right">
                   <div className="py-1">
-                    <Link to="/dashboard" className="block px-4 py-2 text-sm text-surface-700 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-700">
+                    <Link to="/dashboard" className="block px-4 py-2 text-sm text-surface-700 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-700 flex items-center">
+                      <BookOpenIcon className="w-4 h-4 mr-2" />
                       My Dashboard
                     </Link>
-                    <Link to="/badges" className="block px-4 py-2 text-sm text-surface-700 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-700">
-                      My Badges
+                    <Link to="/profile" className="block px-4 py-2 text-sm text-surface-700 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-700 flex items-center">
+                      <SettingsIcon className="w-4 h-4 mr-2" />
+                      Profile Settings
                     </Link>
                     <button 
                       onClick={logout}
@@ -216,6 +219,13 @@ const Header = ({ darkMode, toggleDarkMode, isAuthenticated }) => {
                       >
                         Badges
                       </NavLink>
+                        <NavLink 
+                          to="/profile" 
+                          className={({ isActive }) => `mobile-nav-link ${isActive ? 'text-primary' : ''}`}
+                          onClick={() => setIsMenuOpen(false)}
+                        >
+                          Profile Settings
+                        </NavLink>
                       <button 
                         onClick={() => {
                           logout();

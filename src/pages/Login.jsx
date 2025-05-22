@@ -33,9 +33,15 @@ function Login() {
             </Link>
           </p>
         </div>
-        <div className="text-center">
-          <Link to="/" className="text-sm text-surface-600 dark:text-surface-400 hover:text-primary">
-            Return to home page
+        <div className="text-center space-y-2">
+          <Link to="/forgot-password" className="block text-sm text-primary hover:text-primary-dark">
+            Forgot password?
+          </Link>
+          <div className="border-t border-surface-200 dark:border-surface-700 pt-2">
+            <Link 
+              to="/" 
+              className="text-sm text-surface-600 dark:text-surface-400 hover:text-primary">
+              Return to home page
           </Link>
         </div>
       </div>

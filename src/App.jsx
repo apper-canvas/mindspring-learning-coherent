@@ -19,6 +19,9 @@ import Badges from './pages/Badges';
 import Courses from './pages/Courses';
 import Dashboard from './pages/Dashboard';
 import CourseDetail from './pages/CourseDetail';
+import ProfilePage from './pages/ProfilePage';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
 
 // Components
 import Header from './components/Header';
@@ -157,6 +160,9 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/callback" element={<Callback />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
+            <Route path="/profile" element={<ProtectedRoute element={<ProfilePage />} />} />
             <Route path="/error" element={<ErrorPage />} />
             <Route path="/courses" element={<Courses />} />
             <Route path="/courses/:id" element={<CourseDetail />} />
