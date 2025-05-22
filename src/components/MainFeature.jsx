@@ -110,7 +110,7 @@ const MainFeature = () => {
       description: lesson.description,
       duration: lesson.duration,
       videoUrl: lesson.videoUrl
-    }))
+    }));
   });
 
   // Check network status and use appropriate data source
@@ -866,9 +866,8 @@ const MainFeature = () => {
                   Complete lessons and quizzes to earn badges and track your progress!
                 </p>
               )}
-            </div>
           </div>
-      </div>
+        </div>
     </div>
   );
 };
