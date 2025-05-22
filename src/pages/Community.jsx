@@ -198,7 +198,7 @@ const Community = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <><div className="container mx-auto px-4 py-8">
       <div className="mb-8">
         <h1 className="text-3xl font-bold mb-2">Community</h1>
         <p className="text-surface-600 dark:text-surface-400">Connect with fellow learners, share insights, and grow together</p>
@@ -388,7 +388,7 @@ const Community = () => {
             </motion.div>
           </div>
       )}
-    </div>
+    </></div>
   );
 };
 
