@@ -301,7 +301,7 @@ const Community = () => {
         </div>
         
         {/* Right column - Trending topics */}
-          <div className="bg-white dark:bg-surface-800 rounded-xl p-5 shadow-sm border border-surface-200 dark:border-surface-700">
+        <div className="bg-white dark:bg-surface-800 rounded-xl p-5 shadow-sm border border-surface-200 dark:border-surface-700">
             <h2 className="font-medium text-lg mb-4 flex items-center">
               <TrendingUpIcon className="w-5 h-5 mr-2 text-primary" />
               Trending Topics
@@ -320,8 +320,8 @@ const Community = () => {
             <button className="w-full mt-4 text-sm text-primary hover:underline">
               View All Topics
             </button>
-          </div>
-      </div>
+        </div>
+      </div> {/* End of grid layout */}
       {/* Create Post Modal - Moved outside the grid layout */}
       {isCreateModalOpen && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
