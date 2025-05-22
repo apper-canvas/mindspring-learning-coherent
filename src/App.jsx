@@ -15,6 +15,7 @@ import Explore from './pages/Explore';
 import Community from './pages/Community';
 import Badges from './pages/Badges';
 import Courses from './pages/Courses';
+import Dashboard from './pages/Dashboard';
 
 // Components
 import Header from './components/Header';
@@ -88,6 +89,7 @@ function App() {
           <Route path="/explore" element={<Explore />} />
           <Route path="/community" element={<Community />} />
           <Route path="/badges" element={<Badges />} />
+          <Route path="/dashboard" element={<Dashboard />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </AnimatePresence>

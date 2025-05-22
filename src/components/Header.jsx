@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { getIcon } from '../utils/iconUtils';
 
@@ -10,6 +11,7 @@ const MoonIcon = getIcon('moon');
 const BookOpenIcon = getIcon('book-open');
 const AwardIcon = getIcon('award');
 
+const UserIcon = getIcon('user');
 const Header = ({ darkMode, toggleDarkMode }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -55,6 +57,11 @@ const Header = ({ darkMode, toggleDarkMode }) => {
 
           {/* Right Actions */}
           <div className="flex items-center space-x-4">
+              </li>
+              <li>
+                <Link to="/dashboard" className={`${isActive('/dashboard') ? activeClass : inactiveClass}`}>
+                  Dashboard
+                </Link>
             <button
               onClick={toggleDarkMode}
               className="p-2 rounded-full text-surface-700 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-700 transition-colors"
@@ -109,6 +116,13 @@ const Header = ({ darkMode, toggleDarkMode }) => {
         )}
       </div>
     </header>
+            <Link 
+              to="/dashboard" 
+              className="flex items-center p-3 rounded-lg hover:bg-surface-100 dark:hover:bg-surface-700 transition-colors mb-2"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              <UserIcon className="w-5 h-5 mr-3 text-primary" /> Dashboard
+            </Link>
   );
 };
 
