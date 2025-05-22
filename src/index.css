@@ -191,12 +191,12 @@
   }
 
   /* Category card colors for border top */
-  .border-t-primary { @apply border-t-primary; }
-  .border-t-secondary { @apply border-t-secondary; }
-  .border-t-accent { @apply border-t-accent; }
-  .border-t-primary-dark { @apply border-t-primary-dark; }
-  .border-t-secondary-dark { @apply border-t-secondary-dark; }
-  .border-t-accent-dark { @apply border-t-accent-dark; }
+  .border-t-primary { border-top-color: theme('colors.primary.DEFAULT'); }
+  .border-t-secondary { border-top-color: theme('colors.secondary.DEFAULT'); }
+  .border-t-accent { border-top-color: theme('colors.accent'); }
+  .border-t-primary-dark { border-top-color: theme('colors.primary.dark'); }
+  .border-t-secondary-dark { border-top-color: theme('colors.secondary.dark'); }
+  .border-t-accent-dark { border-top-color: theme('colors.accent-dark', theme('colors.accent')); }
   
   
   /* Badge styles (existing) */
