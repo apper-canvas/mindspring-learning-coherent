@@ -1,10 +1,12 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { toast } from 'react-toastify';
 import { useDispatch, useSelector } from 'react-redux';
 import { saveCourseProgress } from '../utils/indexedDBUtils';
 import { getIcon } from '../utils/iconUtils';
 import DownloadManager from './DownloadManager';
+import BadgeDisplay from './BadgeDisplay';
+import { checkAndAwardBadge, fetchBadges } from '../store/badgeSlice';
 
 // Icons
 const PlayIcon = getIcon('play');
@@ -16,6 +18,7 @@ const ListChecksIcon = getIcon('list-checks');
 const DownloadIcon = getIcon('download');
 const WifiOffIcon = getIcon('wifi-off');
 const ArrowRightIcon = getIcon('arrow-right');
+const AwardIcon = getIcon('award');
 
 // Sample course data
 const courseLessons = [
@@ -77,6 +80,7 @@ const quizQuestions = [
 const MainFeature = () => {
   const dispatch = useDispatch();
   const isOnline = useSelector(state => state.offline.isOnline);
+  const badges = useSelector(state => state.badges.badges);
   const [activeTab, setActiveTab] = useState('lessons');
   const [lessons, setLessons] = useState(courseLessons.map(lesson => ({ ...lesson, isDownloaded: false })));
   const [currentLessonId, setCurrentLessonId] = useState(1);
@@ -93,7 +97,7 @@ const MainFeature = () => {
   });
 
   // For demo purposes, create a course object that can be passed to DownloadManager
-  const [courseData] = useState({
+    title: "JavaScript Fundamentals",  
     id: 1,
     title: "JavaScript Fundamentals",
     description: "Learn the basics of JavaScript programming",
@@ -110,11 +114,25 @@ const MainFeature = () => {
   // Check network status and use appropriate data source
   useEffect(() => {
     setOfflineMode(!isOnline);
+    
+    // Load badges on component mount
+    dispatch(fetchBadges());
+    
+    // Award first steps badge if this is the user's first visit
+    const userState = {
+      lessonProgress: 1, // Just starting
+      completedLessons: 0,
+      courseProgress: 0,
+      quizScore: 0,
+      quizTotal: 0,
+      completedLessonsOffline: 0
+    };
+    dispatch(checkAndAwardBadge({ badgeType: 'FIRST_STEP', userState, courseId: 1, courseTitle: 'JavaScript Fundamentals' }));
   }, [isOnline]);
 
   // Calculate overall course progress
   const overallProgress = Math.round((lessons.filter(lesson => lesson.isCompleted).length / lessons.length) * 100);
-
+  
   // Simulate video playback with progress bar
   useEffect(() => {
     let progressInterval;
@@ -129,13 +147,6 @@ const MainFeature = () => {
             // Mark lesson as completed
             completeLessonHandler(currentLessonId);
             return 100;
-            
-            // Save progress to IndexedDB for offline access
-            const progress = {
-              id: `course-1-lesson-${currentLessonId}`,
-              lessonId: currentLessonId,
-              completed: true
-            };
           }
           return newProgress;
         });
@@ -159,9 +170,9 @@ const MainFeature = () => {
     setIsPlaying(false);
   };
 
-  // Mark lesson as completed
-  const completeLessonHandler = (lessonId) => {
-    setLessons(prev => 
+  // Mark lesson as completed and award badges
+  const completeLessonHandler = useCallback((lessonId) => {
+    setLessons(prev =>
       prev.map(lesson => 
         lesson.id === lessonId 
           ? { ...lesson, isCompleted: true } 
@@ -178,7 +189,28 @@ const MainFeature = () => {
     };
     saveCourseProgress(progress);
     toast.success(`Lesson completed! Great job!`);
-  };
+    
+    // Check for badges - first lesson completed
+    const completedCount = lessons.filter(lesson => lesson.isCompleted).length + 1; // +1 for the one just completed
+    const userState = {
+      lessonProgress: 100,
+      completedLessons: completedCount,
+      courseProgress: Math.round((completedCount / lessons.length) * 100),
+      completedLessonsOffline: offlineMode ? 1 : 0
+    };
+    
+    // Award appropriate badges
+    dispatch(checkAndAwardBadge({ badgeType: 'FIRST_LESSON', userState, courseId: 1, courseTitle: 'JavaScript Fundamentals' }));
+    
+    // Check for course progress badges
+    if (userState.courseProgress >= 50) {
+      dispatch(checkAndAwardBadge({ badgeType: 'HALFWAY', userState, courseId: 1, courseTitle: 'JavaScript Fundamentals' }));
+    }
+    
+    if (userState.courseProgress === 100) {
+      dispatch(checkAndAwardBadge({ badgeType: 'COURSE_COMPLETE', userState, courseId: 1, courseTitle: 'JavaScript Fundamentals' }));
+    }
+  }, [lessons, offlineMode, dispatch]);
 
   // Start quiz
   const startQuizHandler = () => {
@@ -228,6 +260,18 @@ const MainFeature = () => {
         completed: true,
       }));
       toast.success("Quiz completed! Check your results.");
+      
+      // Check for quiz master badge
+      const userState = {
+        quizScore: isCorrect ? quizResults.score + 1 : quizResults.score,
+        quizTotal: quizQuestions.length
+      };
+      
+      // Award perfect quiz badge if all answers were correct
+      if (userState.quizScore === userState.quizTotal) {
+        dispatch(checkAndAwardBadge({ badgeType: 'QUIZ_MASTER', userState, courseId: 1, courseTitle: 'JavaScript Fundamentals' }));
+      }
+      
     }
   };
 
@@ -292,19 +336,8 @@ const MainFeature = () => {
               ? 'text-primary border-b-2 border-primary' 
               : 'text-surface-600 dark:text-surface-400 hover:text-primary dark:hover:text-primary'
           }`}
-        >
           <DownloadIcon className="w-4 h-4 mr-2" />
           Downloads
-        </button>
-        <button 
-          onClick={() => setActiveTab('quiz')} 
-          className={`flex items-center px-4 py-3 text-sm font-medium transition-colors ${
-            activeTab === 'lessons' 
-              ? 'text-primary border-b-2 border-primary' 
-              : 'text-surface-600 dark:text-surface-400 hover:text-primary dark:hover:text-primary'
-          }`}
-        >
-          <ListChecksIcon className="w-4 h-4 mr-2" />
           Lessons
         </button>
         <button 
@@ -327,6 +360,16 @@ const MainFeature = () => {
           }`}
         >
           <TrophyIcon className="w-4 h-4 mr-2" />
+          Progress
+        </button>
+        <button 
+          onClick={() => setActiveTab('badges')} 
+          className={`flex items-center px-4 py-3 text-sm font-medium transition-colors ${
+            activeTab === 'badges' 
+              ? 'text-primary border-b-2 border-primary' 
+              : 'text-surface-600 dark:text-surface-400 hover:text-primary dark:hover:text-primary'
+          }`}
+        >
           Progress
         </button>
       </div>
@@ -706,6 +749,14 @@ const MainFeature = () => {
             </div>
 
             {/* Achievement Cards */}
+          <div>
+            <h3 className="text-lg font-medium mb-4 text-surface-800 dark:text-surface-200">Your Badges</h3>
+            <BadgeDisplay 
+              displayMode="grid" 
+              limit={6}
+              className="mb-4"
+            />
+          </div>
             <div>
               <h3 className="text-lg font-medium mb-4 text-surface-800 dark:text-surface-200">Achievements</h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
@@ -760,6 +811,42 @@ const MainFeature = () => {
             </div>
           </div>
         )}
+      )}
+      
+      {/* Badges Tab */}
+      {activeTab === 'badges' && (
+        <div className="space-y-8">
+          <div className="bg-surface-50 dark:bg-surface-800 rounded-xl p-6">
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-xl font-semibold">Your Badges</h3>
+              <div className="text-sm text-surface-600 dark:text-surface-400">
+                Total badges: {badges.length}
+              </div>
+            </div>
+            
+            <div className="mb-6">
+              <h4 className="font-medium mb-4">Recently Earned</h4>
+              <BadgeDisplay 
+                displayMode="grid"
+                limit={4}
+                className="mb-6"
+              />
+            </div>
+            
+            <div className="border-t border-surface-200 dark:border-surface-700 pt-6">
+              <h4 className="font-medium mb-4">All Badges</h4>
+              <BadgeDisplay 
+                displayMode="grid"
+                showDetails={true}
+              />
+              
+              {badges.length === 0 && (
+                <p className="text-center py-8 text-surface-500 dark:text-surface-400">
+                  Complete lessons and quizzes to earn badges and track your progress!
+                </p>
+              )}
+            </div>
+          </div>
       </div>
     </div>
   );

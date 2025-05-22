@@ -18,6 +18,15 @@ export default {
           dark: '#059669'
         },
         accent: '#f97316',
+        badge: {
+          bronze: '#CD7F32',
+          silver: '#C0C0C0',
+          gold: '#FFD700',
+          beginner: '#83c5be',
+          intermediate: '#6b73c1',
+          advanced: '#e76f51',
+          master: '#7209b7'
+        },
         surface: {
           50: '#f8fafc',   // Lightest
           100: '#f1f5f9',

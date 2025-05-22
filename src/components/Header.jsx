@@ -8,6 +8,7 @@ const XIcon = getIcon('x');
 const SunIcon = getIcon('sun');
 const MoonIcon = getIcon('moon');
 const BookOpenIcon = getIcon('book-open');
+const AwardIcon = getIcon('award');
 
 const Header = ({ darkMode, toggleDarkMode }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -46,6 +47,9 @@ const Header = ({ darkMode, toggleDarkMode }) => {
             </Link>
             <Link to="/community" className="text-surface-700 dark:text-surface-300 hover:text-primary dark:hover:text-primary transition-colors">
               Community
+            </Link>
+            <Link to="/badges" className="text-surface-700 dark:text-surface-300 hover:text-primary dark:hover:text-primary transition-colors flex items-center">
+              <AwardIcon className="w-4 h-4 mr-1" /> Badges
             </Link>
           </nav>
 
@@ -97,6 +101,9 @@ const Header = ({ darkMode, toggleDarkMode }) => {
             </Link>
             <Link to="/community" className="block px-4 py-2 text-surface-700 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-700 rounded-lg transition-colors">
               Community
+            </Link>
+            <Link to="/badges" className="block px-4 py-2 text-surface-700 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-700 rounded-lg transition-colors flex items-center">
+              <AwardIcon className="w-4 h-4 mr-1" /> Badges
             </Link>
           </motion.div>
         )}

@@ -124,6 +124,19 @@
   .badge-accent {
     @apply badge bg-accent/10 text-accent;
   }
+  
+  .badge-achievement {
+    @apply badge bg-gradient-to-r p-0.5 text-white font-bold flex items-center justify-center;
+  }
+  
+  .badge-beginner {
+    @apply badge-achievement from-badge-beginner to-badge-beginner/80;
+  }
+  
+  .badge-intermediate {
+    @apply badge-achievement from-badge-intermediate to-badge-intermediate/80;
+  }
+  
 }
 
 @layer utilities {

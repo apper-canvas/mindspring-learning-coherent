@@ -1,9 +1,10 @@
 import { openDB } from 'idb';
 
 const DB_NAME = 'mindspring-offline';
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 const COURSES_STORE = 'courses';
 const PROGRESS_STORE = 'progress';
+const BADGES_STORE = 'badges';
 
 const initDB = async () => {
   return openDB(DB_NAME, DB_VERSION, {
@@ -15,6 +16,10 @@ const initDB = async () => {
       
       if (!db.objectStoreNames.contains(PROGRESS_STORE)) {
         db.createObjectStore(PROGRESS_STORE, { keyPath: 'id' });
+      }
+      
+      if (!db.objectStoreNames.contains(BADGES_STORE)) {
+        db.createObjectStore(BADGES_STORE, { keyPath: 'id' });
       }
     },
   });
@@ -80,5 +85,48 @@ export const getOfflineCoursesProgress = async () => {
   } catch (error) {
     console.error('Error fetching offline progress:', error);
     return [];
+  }
+};
+
+// Badge-related operations
+export const saveBadge = async (badge) => {
+  try {
+    const db = await initDB();
+    await db.put(BADGES_STORE, badge);
+    return true;
+  } catch (error) {
+    console.error('Error saving badge:', error);
+    return false;
+  }
+};
+
+export const getBadges = async () => {
+  try {
+    const db = await initDB();
+    return await db.getAll(BADGES_STORE);
+  } catch (error) {
+    console.error('Error fetching badges:', error);
+    return [];
+  }
+};
+
+export const getBadge = async (badgeId) => {
+  try {
+    const db = await initDB();
+    return await db.get(BADGES_STORE, badgeId);
+  } catch (error) {
+    console.error(`Error fetching badge ${badgeId}:`, error);
+    return null;
+  }
+};
+
+export const deleteBadge = async (badgeId) => {
+  try {
+    const db = await initDB();
+    await db.delete(BADGES_STORE, badgeId);
+    return true;
+  } catch (error) {
+    console.error(`Error deleting badge ${badgeId}:`, error);
+    return false;
   }
 };
