@@ -1,130 +1,171 @@
+import { v4 as uuidv4 } from 'uuid';
 import { getIcon } from './iconUtils';
 
-// Icons for badges
-export const BadgeIcons = {
-  firstStep: getIcon('play-circle'),
-  firstLesson: getIcon('check-circle'),
-  courseProgress: getIcon('bar-chart-2'),
-  courseComplete: getIcon('award'),
-  quizMaster: getIcon('brain'),
-  offlineLearner: getIcon('wifi-off'),
-  streak: getIcon('zap'),
-  perfectQuiz: getIcon('trophy'),
-  explorer: getIcon('compass'),
-  nightOwl: getIcon('moon')
+// Badge Types & Levels
+export const BADGE_LEVELS = {
+  BRONZE: 'bronze',
+  SILVER: 'silver',
+  GOLD: 'gold',
+  PLATINUM: 'platinum'
 };
 
-// Define badge types with their metadata
+export const BADGE_CATEGORIES = {
+  COMPLETION: 'completion',
+  ENGAGEMENT: 'engagement',
+  ACHIEVEMENT: 'achievement',
+  SPECIAL: 'special'
+};
+
+// Badge type definitions
 export const BADGE_TYPES = {
-  FIRST_STEP: {
-    id: 'first-step',
-    name: 'First Steps',
-    description: 'Started your learning journey',
-    icon: 'firstStep',
-    level: 'beginner',
-    points: 5
-  },
-  FIRST_LESSON: {
-    id: 'first-lesson',
-    name: 'First Lesson',
-    description: 'Completed your first lesson',
-    icon: 'firstLesson',
-    level: 'beginner',
+  COURSE_STARTER: {
+    id: 'course_starter',
+    name: 'Course Starter',
+    description: 'Started your first course',
+    icon: 'play',
+    level: BADGE_LEVELS.BRONZE,
+    category: BADGE_CATEGORIES.ENGAGEMENT,
     points: 10
   },
-  HALFWAY: {
-    id: 'halfway',
-    name: 'Halfway There',
-    description: 'Completed 50% of a course',
-    icon: 'courseProgress',
-    level: 'intermediate',
-    points: 25
-  },
-  COURSE_COMPLETE: {
-    id: 'course-complete',
-    name: 'Course Mastery',
-    description: 'Completed an entire course',
-    icon: 'courseComplete',
-    level: 'advanced',
+  COURSE_COMPLETION: {
+    id: 'course_completion',
+    name: 'Course Completer',
+    description: 'Completed a full course',
+    icon: 'check-circle',
+    level: BADGE_LEVELS.SILVER,
+    category: BADGE_CATEGORIES.COMPLETION,
     points: 50
   },
-  QUIZ_MASTER: {
-    id: 'quiz-master',
-    name: 'Quiz Master',
-    description: 'Achieved a perfect score on a quiz',
-    icon: 'perfectQuiz',
-    level: 'intermediate',
-    points: 30
+  PERFECT_QUIZ: {
+    id: 'perfect_quiz',
+    name: 'Perfect Score',
+    description: 'Achieved 100% on a quiz',
+    icon: 'target',
+    level: BADGE_LEVELS.GOLD,
+    category: BADGE_CATEGORIES.ACHIEVEMENT,
+    points: 100
   },
-  OFFLINE_LEARNER: {
-    id: 'offline-learner',
-    name: 'Offline Learner',
-    description: 'Completed a lesson while offline',
-    icon: 'offlineLearner',
-    level: 'intermediate',
-    points: 20
+  FAST_LEARNER: {
+    id: 'fast_learner',
+    name: 'Fast Learner',
+    description: 'Completed a course in record time',
+    icon: 'zap',
+    level: BADGE_LEVELS.SILVER,
+    category: BADGE_CATEGORIES.ACHIEVEMENT,
+    points: 75
+  },
+  STREAK_MASTER: {
+    id: 'streak_master',
+    name: 'Streak Master',
+    description: 'Learned for 7 days in a row',
+    icon: 'flame',
+    level: BADGE_LEVELS.GOLD,
+    category: BADGE_CATEGORIES.ENGAGEMENT,
+    points: 150
+  },
+  SOCIAL_BUTTERFLY: {
+    id: 'social_butterfly',
+    name: 'Social Butterfly',
+    description: 'Made 5 comments in the community',
+    icon: 'message-circle',
+    level: BADGE_LEVELS.BRONZE,
+    category: BADGE_CATEGORIES.ENGAGEMENT,
+    points: 25
+  },
+  NIGHT_OWL: {
+    id: 'night_owl',
+    name: 'Night Owl',
+    description: 'Studied after midnight',
+    icon: 'moon',
+    level: BADGE_LEVELS.BRONZE,
+    category: BADGE_CATEGORIES.SPECIAL,
+    points: 15
+  },
+  KNOWLEDGE_EXPLORER: {
+    id: 'knowledge_explorer',
+    name: 'Knowledge Explorer',
+    description: 'Explored 10 different categories',
+    icon: 'compass',
+    level: BADGE_LEVELS.PLATINUM,
+    category: BADGE_CATEGORIES.ACHIEVEMENT,
+    points: 200
   }
 };
 
-// Check if a badge should be awarded based on conditions
-export const checkBadgeEligibility = (badgeType, userState) => {
-  switch (badgeType) {
-    case BADGE_TYPES.FIRST_STEP.id:
-      return userState.lessonProgress > 0;
+// Create a badge instance for a user
+export const createBadgeInstance = (badgeType, courseId = null, courseTitle = null) => {
+  if (!BADGE_TYPES[badgeType]) {
+    console.error(`Badge type ${badgeType} does not exist`);
+    return null;
+  }
+  
+  const badgeTemplate = BADGE_TYPES[badgeType];
+  return {
+    id: uuidv4(),
+    badgeTypeId: badgeTemplate.id,
+    name: badgeTemplate.name,
+    description: badgeTemplate.description,
+    icon: badgeTemplate.icon,
+    level: badgeTemplate.level,
+    category: badgeTemplate.category,
+    points: badgeTemplate.points,
+    courseId: courseId,
+    courseTitle: courseTitle,
+    earnedAt: new Date().toISOString(),
+    isNew: true
+  };
+};
+
+// Check if user is eligible for a badge
+export const checkBadgeEligibility = (badgeTypeId, userState) => {
+  // Implement eligibility logic based on the badge type and user state
+  switch (badgeTypeId) {
+    case 'course_starter':
+      return userState.startedCourses && userState.startedCourses.length > 0;
     
-    case BADGE_TYPES.FIRST_LESSON.id:
-      return userState.completedLessons > 0;
+    case 'course_completion':
+      return userState.completedCourses && userState.completedCourses.length > 0;
     
-    case BADGE_TYPES.HALFWAY.id:
-      return userState.courseProgress >= 50;
+    case 'perfect_quiz':
+      return userState.quizScores && userState.quizScores.some(score => score.percentage === 100);
     
-    case BADGE_TYPES.COURSE_COMPLETE.id:
-      return userState.courseProgress === 100;
+    case 'fast_learner':
+      return userState.completedCourses && userState.completedCourses.some(
+        course => course.timeSpent && course.timeSpent < course.averageTimeToComplete * 0.7
+      );
     
-    case BADGE_TYPES.QUIZ_MASTER.id:
-      return userState.quizScore === userState.quizTotal && userState.quizTotal > 0;
+    case 'streak_master':
+      return userState.streak && userState.streak >= 7;
     
-    case BADGE_TYPES.OFFLINE_LEARNER.id:
-      return userState.completedLessonsOffline > 0;
+    case 'social_butterfly':
+      return userState.comments && userState.comments.length >= 5;
+    
+    case 'night_owl':
+      const now = new Date();
+      return now.getHours() >= 0 && now.getHours() < 5 && userState.activeToday;
+    
+    case 'knowledge_explorer':
+      return userState.exploredCategories && userState.exploredCategories.length >= 10;
     
     default:
       return false;
   }
 };
 
-// Create a badge instance with metadata, earned timestamp, and course context
-export const createBadgeInstance = (badgeType, courseId, courseTitle) => {
-  const badge = BADGE_TYPES[badgeType];
-  if (!badge) return null;
-  
-  return {
-    id: `${badge.id}-${courseId}-${Date.now()}`,
-    badgeTypeId: badge.id,
-    name: badge.name,
-    description: badge.description,
-    icon: badge.icon,
-    level: badge.level,
-    points: badge.points,
-    courseId,
-    courseTitle,
-    earnedAt: new Date().toISOString(),
-    isNew: true
-  };
-};
+// Helper functions for badge display
+export const getBadgeIcon = (iconName) => getIcon(iconName);
 
-// Helper function to get badge icon by type
-export const getBadgeIcon = (iconName) => {
-  return BadgeIcons[iconName] || BadgeIcons.firstStep;
-};
-
-// Get color class based on badge level
 export const getBadgeLevelClass = (level) => {
   switch (level) {
-    case 'beginner':
-      return 'badge-beginner';
-    case 'intermediate':
-      return 'badge-intermediate';
+    case BADGE_LEVELS.BRONZE:
+      return 'bg-gradient-to-r from-badge-beginner to-badge-beginner/80';
+    case BADGE_LEVELS.SILVER:
+      return 'bg-gradient-to-r from-gray-400 to-gray-300';
+    case BADGE_LEVELS.GOLD:
+      return 'bg-gradient-to-r from-badge-intermediate to-badge-intermediate/80';
+    case BADGE_LEVELS.PLATINUM:
+      return 'bg-gradient-to-r from-indigo-600 to-purple-600';
     default:
-      return 'badge-beginner';
+      return 'bg-gradient-to-r from-gray-500 to-gray-400';
   }
 };

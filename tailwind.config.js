@@ -15,6 +15,10 @@ export default {
         secondary: {
           DEFAULT: '#10b981',
           light: '#34d399',
+        'badge-bronze': '#CD7F32',
+        'badge-silver': '#C0C0C0',
+        'badge-gold': '#FFD700',
+        'badge-platinum': '#E5E4E2',
           dark: '#059669'
         },
         accent: '#f97316',

@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { saveBadge, getBadges } from '../utils/indexedDBUtils';
+import { saveBadge, getBadges, getBadge } from '../utils/indexedDBUtils';
 import { createBadgeInstance, checkBadgeEligibility, BADGE_TYPES } from '../utils/badgeUtils';
 import { toast } from 'react-toastify';
 

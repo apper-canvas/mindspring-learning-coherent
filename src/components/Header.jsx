@@ -31,6 +31,11 @@ const Header = ({ darkMode, toggleDarkMode }) => {
             </motion.div>
             <span className="text-xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
               MindSpring
+          <li>
+            <NavLink to="/badges" className={({isActive}) => isActive ? activeClass : inactiveClass}>
+              Badges
+            </NavLink>
+          </li>
             </span>
           </Link>
 
