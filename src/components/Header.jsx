@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
-import { NavLink } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { getIcon } from '../utils/iconUtils';
 
@@ -14,6 +13,10 @@ const AwardIcon = getIcon('award');
 const UserIcon = getIcon('user');
 const Header = ({ darkMode, toggleDarkMode }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  
+  const isActive = (path) => window.location.pathname === path;
+  const activeClass = "text-primary font-medium";
+  const inactiveClass = "text-surface-700 dark:text-surface-300 hover:text-primary dark:hover:text-primary";
 
   const toggleMenu = () => {
     setIsMenuOpen(prev => !prev);
@@ -53,15 +56,11 @@ const Header = ({ darkMode, toggleDarkMode }) => {
             <Link to="/badges" className="text-surface-700 dark:text-surface-300 hover:text-primary dark:hover:text-primary transition-colors flex items-center">
               <AwardIcon className="w-4 h-4 mr-1" /> Badges
             </Link>
+            <Link to="/dashboard" className="text-surface-700 dark:text-surface-300 hover:text-primary dark:hover:text-primary transition-colors flex items-center">
+              <UserIcon className="w-4 h-4 mr-1" /> Dashboard
+            </Link>
           </nav>
-
-          {/* Right Actions */}
           <div className="flex items-center space-x-4">
-              </li>
-              <li>
-                <Link to="/dashboard" className={`${isActive('/dashboard') ? activeClass : inactiveClass}`}>
-                  Dashboard
-                </Link>
             <button
               onClick={toggleDarkMode}
               className="p-2 rounded-full text-surface-700 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-700 transition-colors"
@@ -112,17 +111,17 @@ const Header = ({ darkMode, toggleDarkMode }) => {
             <Link to="/badges" className="block px-4 py-2 text-surface-700 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-700 rounded-lg transition-colors flex items-center">
               <AwardIcon className="w-4 h-4 mr-1" /> Badges
             </Link>
+            <Link 
+              to="/dashboard" 
+              className="block px-4 py-2 text-surface-700 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-700 rounded-lg transition-colors flex items-center"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              <UserIcon className="w-4 h-4 mr-1" /> Dashboard
+            </Link>
           </motion.div>
         )}
       </div>
     </header>
-            <Link 
-              to="/dashboard" 
-              className="flex items-center p-3 rounded-lg hover:bg-surface-100 dark:hover:bg-surface-700 transition-colors mb-2"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              <UserIcon className="w-5 h-5 mr-3 text-primary" /> Dashboard
-            </Link>
   );
 };
 
