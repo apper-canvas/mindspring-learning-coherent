@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useSearchParams } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
-import { useSelector } from 'react-redux';
+import { motion, AnimatePresence, useAnimation } from 'framer-motion';
+import { useContext } from 'react';
 import { toast } from 'react-toastify';
 import { getIcon } from '../utils/iconUtils';
 import { coursesData } from '../utils/coursesData';
@@ -15,8 +15,10 @@ const FilterIcon = getIcon('filter');
 const SlidersIcon = getIcon('sliders');
 const PlusIcon = getIcon('plus');
 const BookOpenIcon = getIcon('book-open');
+const AlertIcon = getIcon('alert-triangle');
 
-import { getCourses } from '../services/courseService';
+import { getCourses, deleteCourse } from '../services/courseService';
+import { AuthContext } from '../App';
 
 const Courses = () => {
   const [courses, setCourses] = useState([]);
@@ -28,8 +30,14 @@ const Courses = () => {
   const [selectedDifficulty, setSelectedDifficulty] = useState('all');
   const [showFilters, setShowFilters] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [courseToDelete, setCourseToDelete] = useState(null);
+  const [deleting, setDeleting] = useState(false);
+  
   const categoryParam = searchParams.get('category');
-  const isAuthenticated = useSelector(state => state.user.isAuthenticated);
+  
+  // Get authentication status from context
+  const { isAuthenticated } = useContext(AuthContext);
 
   const categories = [
     { id: 'all', name: 'All Categories' },
@@ -141,6 +149,44 @@ const Courses = () => {
   const toggleFilters = () => {
     setShowFilters(prev => !prev);
   };
+
+  const handleDeleteClick = (course) => {
+    setCourseToDelete(course);
+    setShowDeleteConfirm(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!courseToDelete) return;
+    
+    setDeleting(true);
+    try {
+      await deleteCourse(courseToDelete.Id);
+      
+      // Update local state to remove the deleted course
+      setCourses(prevCourses => prevCourses.filter(c => c.Id !== courseToDelete.Id));
+      setFilteredCourses(prevCourses => prevCourses.filter(c => c.Id !== courseToDelete.Id));
+      
+      toast.success(`"${courseToDelete.title}" has been deleted successfully`);
+    } catch (error) {
+      console.error('Error deleting course:', error);
+      toast.error('Failed to delete the course. Please try again.');
+    } finally {
+      setDeleting(false);
+      setShowDeleteConfirm(false);
+      setCourseToDelete(null);
+    }
+  };
+
+  const cancelDelete = () => {
+    setShowDeleteConfirm(false);
+    setCourseToDelete(null);
+  };
+
+  // Animation control for modal
+  const modalControls = useAnimation();
+  useEffect(() => {
+    showDeleteConfirm ? modalControls.start({ opacity: 1 }) : modalControls.start({ opacity: 0 });
+  }, [showDeleteConfirm, modalControls]);
 
   return (
     // Check for error state first and show error message if needed
@@ -280,7 +326,7 @@ const Courses = () => {
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.3 }}
                 >
-                  <CourseCard key={course.Id} course={course} />
+                  <CourseCard key={course.Id} course={course} onDeleteClick={handleDeleteClick} />
                 </motion.div>
               ))}
             </div>
@@ -299,6 +345,57 @@ const Courses = () => {
           </div>
         )}
       </section>
+      
+      {/* Delete Confirmation Modal */}
+      {showDeleteConfirm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={modalControls}
+            className="bg-white dark:bg-surface-800 rounded-lg p-6 max-w-md w-full shadow-xl"
+          >
+            <div className="flex items-center text-red-600 dark:text-red-400 mb-4">
+              <AlertIcon className="w-6 h-6 mr-2" />
+              <h3 className="text-xl font-semibold">Delete Course</h3>
+            </div>
+            
+            <p className="mb-6 text-surface-700 dark:text-surface-300">
+              Are you sure you want to delete "{courseToDelete?.title}"? This action cannot be undone.
+            </p>
+            
+            <div className="flex flex-col sm:flex-row sm:justify-end gap-3">
+              <button
+                onClick={cancelDelete}
+                disabled={deleting}
+                className="btn-ghost order-2 sm:order-1"
+              >
+                Cancel
+              </button>
+              
+              <button
+                onClick={confirmDelete}
+                disabled={deleting}
+                className="btn-danger flex items-center justify-center order-1 sm:order-2"
+              >
+                {deleting ? (
+                  <>
+                    <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Deleting...
+                  </>
+                ) : (
+                  <>
+                    <TrashIcon className="w-4 h-4 mr-1" />
+                    Delete Course
+                  </>
+                )}
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
     </div>
     )
   );

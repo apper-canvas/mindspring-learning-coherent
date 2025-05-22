@@ -207,3 +207,24 @@ export const updateCourse = async (courseId, courseData) => {
     throw error;
   }
 };
+
+// Delete a course
+export const deleteCourse = async (courseId) => {
+  try {
+    const { ApperClient } = window.ApperSDK;
+    const apperClient = new ApperClient({
+      apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
+      apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
+    });
+
+    const params = {
+      RecordIds: [courseId]
+    };
+
+    const response = await apperClient.deleteRecord("course", params);
+    return response;
+  } catch (error) {
+    console.error(`Error deleting course with ID ${courseId}:`, error);
+    throw error;
+  }
+};

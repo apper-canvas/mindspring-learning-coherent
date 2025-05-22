@@ -1,24 +1,29 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useContext } from 'react';
+import { AuthContext } from '../App';
 import { motion } from 'framer-motion';
 import { toast } from 'react-toastify';
 import { useSelector, useDispatch } from 'react-redux';
 import { getIcon } from '../utils/iconUtils';
 
 // Services
+const TrashIcon = getIcon('trash');
 import { enrollUserInCourse } from '../services/userCourseService';
-
+const CourseCard = ({ course, onDeleteClick }) => {
+  const { isAuthenticated } = useContext(AuthContext);
+  
 // Icons
 const UserIcon = getIcon('user');
 const ClockIcon = getIcon('clock');
 const BookOpenIcon = getIcon('book-open');
-const UsersIcon = getIcon('users');
+        return 'bg-green-100 text-green-800 dark:bg-green-900/60 dark:text-green-200';
 const StarIcon = getIcon('star');
-const FileIcon = getIcon('file');
+        return 'bg-blue-100 text-blue-800 dark:bg-blue-900/60 dark:text-blue-200';
 const DownloadIcon = getIcon('download');
-
+        return 'bg-orange-100 text-orange-800 dark:bg-orange-900/60 dark:text-orange-200';
 const CourseCard = ({ course }) => {
-  const [isEnrolling, setIsEnrolling] = useState(false);
+        return 'bg-gray-100 text-gray-800 dark:bg-gray-900/60 dark:text-gray-200';
   const [isDownloading, setIsDownloading] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -47,6 +52,17 @@ const CourseCard = ({ course }) => {
       case 'advanced':
         return 'Advanced';
       default:
+              
+              {isAuthenticated && (
+                <button 
+                  onClick={(e) => {
+                    e.preventDefault();
+                    onDeleteClick(course);
+                  }}
+                  className="ml-auto text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 transition-colors p-1"
+                  aria-label="Delete course"
+                ><TrashIcon className="w-4 h-4" /></button>
+              )}
         return 'All Levels';
     }
   };

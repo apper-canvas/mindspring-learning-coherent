@@ -4,6 +4,7 @@
 
 @layer base {
   :root {
+  .btn-danger { @apply px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors focus:ring-2 focus:ring-red-600 focus:ring-offset-2 focus:outline-none; }
     --primary: 236 253 245;
     --primary-light: 110 231 183;
     --primary-dark: 5 150 105;
