@@ -27,6 +27,7 @@ const Courses = () => {
   
   const clearCategoryFilter = () => {
     setSearchParams({});
+  };
 
   const categories = [
     { id: 'all', name: 'All Categories' },
@@ -79,14 +80,12 @@ const Courses = () => {
     }
     
     // Filter by category param from URL if present
-    if (categoryParam) {
       result = result.filter(course => {
         if (course.categories) {
           return course.categories.includes(categoryParam);
         }
         return course.category === categoryParam;
       });
-      result = result.filter(course => course.category === selectedCategory);
     }
 
     // Filter by difficulty
