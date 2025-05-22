@@ -189,6 +189,15 @@
   .rank-3 {
     @apply text-leaderboard-bronze font-bold;
   }
+
+  /* Category card colors for border top */
+  .border-t-primary { @apply border-t-primary; }
+  .border-t-secondary { @apply border-t-secondary; }
+  .border-t-accent { @apply border-t-accent; }
+  .border-t-primary-dark { @apply border-t-primary-dark; }
+  .border-t-secondary-dark { @apply border-t-secondary-dark; }
+  .border-t-accent-dark { @apply border-t-accent-dark; }
+  
   
   /* Badge styles (existing) */
   

@@ -9,6 +9,28 @@ const ExploreCard = ({ category }) => {
   
   const Icon = getIcon(icon);
   
+  // Helper function to get the appropriate color classes
+  const getColorClasses = (colorName) => {
+    const colorMap = {
+      primary: {
+        border: 'border-t-primary hover:border-t-primary-dark',
+        bg: 'bg-primary/10 text-primary'
+      },
+      secondary: {
+        border: 'border-t-secondary hover:border-t-secondary-dark',
+        bg: 'bg-secondary/10 text-secondary'
+      },
+      accent: {
+        border: 'border-t-accent hover:border-t-accent-dark',
+        bg: 'bg-accent/10 text-accent'
+      }
+    };
+    
+    return colorMap[colorName] || colorMap.primary;
+  };
+  
+  const colorClasses = getColorClasses(color);
+  
   // Card animations
   const cardVariants = {
     initial: { opacity: 0, y: 20 },
@@ -39,11 +61,11 @@ const ExploreCard = ({ category }) => {
       variants={cardVariants}
     >
       <Link to={path || `/category/${id}`} className="block h-full">
-        <div className={`card h-full p-6 flex flex-col border-t-4 ${color ? `border-t-${color}` : 'border-t-primary'} ${color ? `hover:border-t-${color}-dark` : 'hover:border-t-primary-dark'} transition-colors`}>
+        <div className={`card h-full p-6 flex flex-col border-t-4 ${colorClasses.border} transition-colors`}>
           <div className="flex items-center mb-4">
             <motion.div 
-              className={`w-10 h-10 rounded-full bg-${color || 'primary'}/10 flex items-center justify-center text-${color || 'primary'} mr-3`}
-              variants={iconVariants}
+              className={`w-10 h-10 rounded-full ${colorClasses.bg} flex items-center justify-center mr-3`}
+              variants={iconVariants} 
             >
               <Icon className="w-5 h-5" />
             </motion.div>

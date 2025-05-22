@@ -76,6 +76,17 @@ export default {
       }
     }
   },
+  safelist: [
+    'border-t-primary',
+    'border-t-secondary',
+    'border-t-accent',
+    'border-t-primary-dark',
+    'border-t-secondary-dark',
+    'border-t-accent-dark',
+    'bg-primary/10',
+    'bg-secondary/10',
+    'bg-accent/10',
+  ],
   plugins: [],
   darkMode: 'class',
 }
