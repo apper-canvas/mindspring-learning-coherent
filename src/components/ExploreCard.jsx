@@ -2,6 +2,8 @@ import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { getIcon } from '../utils/iconUtils';
 
+const ChevronRightIcon = getIcon('chevron-right');
+
 const ExploreCard = ({ category }) => {
   const { id, title, description, icon, color, count, path } = category;
   
@@ -37,7 +39,7 @@ const ExploreCard = ({ category }) => {
       variants={cardVariants}
     >
       <Link to={path || `/category/${id}`} className="block h-full">
-        <div className={`card h-full p-6 flex flex-col border-t-4 border-t-${color || 'primary'} hover:border-t-${color || 'primary'}-dark transition-colors`}>
+        <div className={`card h-full p-6 flex flex-col border-t-4 ${color ? `border-t-${color}` : 'border-t-primary'} ${color ? `hover:border-t-${color}-dark` : 'hover:border-t-primary-dark'} transition-colors`}>
           <div className="flex items-center mb-4">
             <motion.div 
               className={`w-10 h-10 rounded-full bg-${color || 'primary'}/10 flex items-center justify-center text-${color || 'primary'} mr-3`}
@@ -52,7 +54,7 @@ const ExploreCard = ({ category }) => {
           
           <div className="mt-auto flex justify-between items-center text-sm text-surface-500 dark:text-surface-400">
             <span>{count} items</span>
-            <span className="flex items-center">{getIcon('chevron-right')({ className: "w-4 h-4 ml-1" })}</span>
+            <span className="flex items-center"><ChevronRightIcon className="w-4 h-4 ml-1" /></span>
           </div>
         </div>
       </Link>
