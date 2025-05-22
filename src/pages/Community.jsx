@@ -237,7 +237,7 @@ const Community = () => {
                 </button>
               ))}
             </div>
-          )}
+          </div>
         {/* Create Post Modal */}
           {/* Loading state */}
           {loading && (
@@ -359,9 +359,8 @@ const Community = () => {
                   onClick={handleCreatePost}
                   className="px-4 py-2 bg-primary hover:bg-primary-dark text-white rounded-lg"
                 >Post</button>
-                </button>
               </div>
-          </div>
+            </motion.div>
         </div>
         
         {/* Right column - Community sidebar */}
