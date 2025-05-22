@@ -295,8 +295,34 @@ const Community = () => {
                 </div>
               )}
             </div>
-          )}
+        {/* Right column - Community sidebar */}
+        <div className="space-y-6">
+          {/* Trending topics */}
+          <div className="bg-white dark:bg-surface-800 rounded-xl p-5 shadow-sm border border-surface-200 dark:border-surface-700">
+            <h2 className="font-medium text-lg mb-4 flex items-center">
+              <TrendingUpIcon className="w-5 h-5 mr-2 text-primary" />
+              Trending Topics
+            </h2>
+            <div className="space-y-4">
+              {trendingTopics.map(topic => (
+                <div key={topic.id} className="flex items-start">
+                  <TagIcon className="w-4 h-4 mt-1 mr-2 text-accent" />
+                  <div>
+                    <h3 className="font-medium hover:text-primary cursor-pointer">{topic.title}</h3>
+                    <p className="text-sm text-surface-500 dark:text-surface-400">{topic.postCount} posts this week</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <button className="w-full mt-4 text-sm text-primary hover:underline">
+              View All Topics
+            </button>
+          </div>
         </div>
+      </div>
+      
+      {/* Create Post Modal - Moved outside the grid layout */}
+      {isCreateModalOpen && (
         
         {isCreateModalOpen && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
@@ -362,32 +388,8 @@ const Community = () => {
               </div>
             </motion.div>
           </div>
-        </div>
-        
-        {/* Right column - Community sidebar */}
-        <div className="space-y-6">
-          {/* Trending topics */}
-          <div className="bg-white dark:bg-surface-800 rounded-xl p-5 shadow-sm border border-surface-200 dark:border-surface-700">
-            <h2 className="font-medium text-lg mb-4 flex items-center">
-              <TrendingUpIcon className="w-5 h-5 mr-2 text-primary" />
-              Trending Topics
-            </h2>
-            <div className="space-y-4">
-              {trendingTopics.map(topic => (
-                <div key={topic.id} className="flex items-start">
-                  <TagIcon className="w-4 h-4 mt-1 mr-2 text-accent" />
-                  <div>
-                    <h3 className="font-medium hover:text-primary cursor-pointer">{topic.title}</h3>
-                    <p className="text-sm text-surface-500 dark:text-surface-400">{topic.postCount} posts this week</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-            <button className="w-full mt-4 text-sm text-primary hover:underline">
-              View All Topics
-            </button>
-          </div>
-        </div>
+        )}
+      
       </div>
     </div>
   );
