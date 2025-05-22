@@ -265,6 +265,7 @@ const Header = ({ darkMode, toggleDarkMode, isAuthenticated }) => {
           )}
         </AnimatePresence>
       </div>
+      </div>
     </header>
   );
 };
