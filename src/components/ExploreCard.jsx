@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { getIcon } from '../utils/iconUtils';
 
 const ChevronRightIcon = getIcon('chevron-right');
@@ -22,13 +23,18 @@ const ExploreCard = ({ category }) => {
       },
       accent: {
         border: 'border-t-accent hover:border-t-accent-dark',
+  const navigate = useNavigate();
         bg: 'bg-accent/10 text-accent'
       }
     };
     
     return colorMap[colorName] || colorMap.primary;
   };
-  
+
+  const handleCardClick = () => {
+    navigate(path);
+  };
+
   const colorClasses = getColorClasses(color);
   
   // Card animations
@@ -37,9 +43,11 @@ const ExploreCard = ({ category }) => {
     animate: { opacity: 1, y: 0, transition: { duration: 0.3 } },
     hover: { 
       y: -5, 
+        cursor-pointer
+        hover:shadow-lg transition-shadow duration-300
       boxShadow: '0 10px 20px rgba(0,0,0,0.1)',
       transition: { duration: 0.2 }
-    }
+      onClick={handleCardClick}
   };
 
   // Icon animations

@@ -1,13 +1,17 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { toast } from 'react-toastify';
 import { getIcon } from '../utils/iconUtils';
 import { coursesData } from '../utils/coursesData';
 import CourseCard from '../components/CourseCard';
 
+const XIcon = getIcon('x');
 // Icons
 const SearchIcon = getIcon('search');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const categoryParam = searchParams.get('category');
 const FilterIcon = getIcon('filter');
 const SlidersIcon = getIcon('sliders');
 const BookOpenIcon = getIcon('book-open');
@@ -19,8 +23,14 @@ const Courses = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState('all');
+    const matchesCategory = categoryParam ? course.categories.includes(categoryParam) : true;
   const [selectedDifficulty, setSelectedDifficulty] = useState('all');
-  const [showFilters, setShowFilters] = useState(false);
+    return matchesSearch && matchesCategory;
+  });
+  
+  // Clear category filter
+  const clearCategoryFilter = () => {
+    setSearchParams({});
 
   const categories = [
     { id: 'all', name: 'All Categories' },
@@ -68,6 +78,18 @@ const Courses = () => {
 
     // Filter by category
     if (selectedCategory !== 'all') {
+        
+        {categoryParam && (
+          <div className="mt-3 flex items-center">
+            <span className="text-surface-600 dark:text-surface-400">Filtered by category: </span>
+            <span className="ml-2 px-3 py-1 bg-primary/10 text-primary rounded-full flex items-center">
+              {categoryParam.charAt(0).toUpperCase() + categoryParam.slice(1).replace('-', ' ')}
+              <button onClick={clearCategoryFilter} className="ml-2" aria-label="Clear filter">
+                <XIcon className="w-4 h-4" />
+              </button>
+            </span>
+          </div>
+        )}
       result = result.filter(course => course.category === selectedCategory);
     }
 

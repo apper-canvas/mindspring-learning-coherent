@@ -88,6 +88,11 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/courses" element={<Courses />} />
           <Route path="/courses/:id" element={<CourseDetail />} />
+          <Route path="/community/study-groups" element={<Community />} />
+          <Route path="/community/forums" element={<Community />} />
+          <Route path="/community/mentorship" element={<Community />} />
+          <Route path="/practice/:type" element={<NotFound />} />
+          <Route path="/courses/:id" element={<CourseDetail />} />
           <Route path="/explore" element={<Explore />} />
           <Route path="/community" element={<Community />} />
           <Route path="/badges" element={<Badges />} />
