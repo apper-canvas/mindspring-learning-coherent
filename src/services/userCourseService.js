@@ -1,45 +1,8 @@
 /**
- * User Course service for managing course enrollments and progress
+ * Service for managing user course enrollments and progress
  */
 
-// Get all courses enrolled by a user
-export const getUserCourses = async (userId) => {
-  try {
-    const { ApperClient } = window.ApperSDK;
-    const apperClient = new ApperClient({
-      apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
-      apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
-    });
-
-    const params = {
-      fields: [
-        "Id",
-        "Name",
-        "progress",
-        "lastAccessed",
-        "isDownloaded",
-        "enrolledDate",
-        "userId",
-        "courseId"
-      ],
-      where: [
-        {
-          fieldName: "userId",
-          operator: "ExactMatch",
-          values: [userId]
-        }
-      ]
-    };
-
-    const response = await apperClient.fetchRecords("user_course", params);
-    return response?.data || [];
-  } catch (error) {
-    console.error(`Error fetching courses for user ${userId}:`, error);
-    throw error;
-  }
-};
-
-// Check if a user is enrolled in a course
+// Check if user is enrolled in a course
 export const isUserEnrolled = async (userId, courseId) => {
   try {
     const { ApperClient } = window.ApperSDK;
@@ -65,49 +28,41 @@ export const isUserEnrolled = async (userId, courseId) => {
     };
 
     const response = await apperClient.fetchRecords("user_course", params);
-    return response?.data?.length > 0;
+    return response?.data && response.data.length > 0;
   } catch (error) {
     console.error(`Error checking enrollment for user ${userId} in course ${courseId}:`, error);
     throw error;
   }
 };
 
-// Enroll a user in a course
+// Enroll user in a course
 export const enrollUserInCourse = async (userId, courseId) => {
   try {
-    // First check if already enrolled
-    const isEnrolled = await isUserEnrolled(userId, courseId);
-    if (isEnrolled) {
-      return { success: true, message: "User already enrolled in this course" };
-    }
-
     const { ApperClient } = window.ApperSDK;
     const apperClient = new ApperClient({
       apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
       apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
     });
 
-    // Get course name for the enrollment record name
-    const courseResponse = await apperClient.getRecordById("course", courseId, { fields: ["Name"] });
-    const courseName = courseResponse?.data?.Name || "Course Enrollment";
+    // Check if already enrolled
+    const alreadyEnrolled = await isUserEnrolled(userId, courseId);
+    if (alreadyEnrolled) {
+      return { success: true, message: "User already enrolled in this course" };
+    }
 
     const params = {
       records: [{
-        Name: `${courseName} Enrollment`,
+        Name: `${userId}-${courseId}`,
+        userId: userId,
+        courseId: courseId,
         progress: 0,
         lastAccessed: new Date().toISOString(),
         isDownloaded: false,
-        enrolledDate: new Date().toISOString(),
-        userId: userId,
-        courseId: courseId
+        enrolledDate: new Date().toISOString()
       }]
     };
 
     const response = await apperClient.createRecord("user_course", params);
-    
-    // Also update the course enrollments count
-    await updateCourseEnrollments(courseId, 1);
-    
     return response;
   } catch (error) {
     console.error(`Error enrolling user ${userId} in course ${courseId}:`, error);
@@ -115,8 +70,8 @@ export const enrollUserInCourse = async (userId, courseId) => {
   }
 };
 
-// Update course progress for a user
-export const updateUserCourseProgress = async (userId, courseId, progress) => {
+// Get user's enrolled courses
+export const getUserEnrolledCourses = async (userId) => {
   try {
     const { ApperClient } = window.ApperSDK;
     const apperClient = new ApperClient({
@@ -124,7 +79,50 @@ export const updateUserCourseProgress = async (userId, courseId, progress) => {
       apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
     });
 
-    // First get the user_course record
+    const params = {
+      fields: [
+        "Id",
+        "Name",
+        "progress",
+        "lastAccessed",
+        "isDownloaded",
+        "enrolledDate",
+        "userId",
+        "courseId"
+      ],
+      where: [
+        {
+          fieldName: "userId",
+          operator: "ExactMatch",
+          values: [userId]
+        }
+      ],
+      orderBy: [
+        {
+          fieldName: "lastAccessed",
+          SortType: "DESC"
+        }
+      ]
+    };
+
+    const response = await apperClient.fetchRecords("user_course", params);
+    return response?.data || [];
+  } catch (error) {
+    console.error(`Error fetching enrolled courses for user ${userId}:`, error);
+    throw error;
+  }
+};
+
+// Update user's course progress
+export const updateCourseProgress = async (userId, courseId, progress) => {
+  try {
+    const { ApperClient } = window.ApperSDK;
+    const apperClient = new ApperClient({
+      apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
+      apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
+    });
+
+    // First get the user_course record to update
     const params = {
       fields: ["Id"],
       where: [
@@ -141,14 +139,12 @@ export const updateUserCourseProgress = async (userId, courseId, progress) => {
       ]
     };
 
-    const response = await apperClient.fetchRecords("user_course", params);
-    if (!response?.data?.length) {
+    const fetchResponse = await apperClient.fetchRecords("user_course", params);
+    if (!fetchResponse?.data || fetchResponse.data.length === 0) {
       throw new Error("User is not enrolled in this course");
     }
 
-    const userCourseId = response.data[0].Id;
-
-    // Update the progress
+    const userCourseId = fetchResponse.data[0].Id;
     const updateParams = {
       records: [{
         Id: userCourseId,
@@ -163,13 +159,3 @@ export const updateUserCourseProgress = async (userId, courseId, progress) => {
     throw error;
   }
 };
-
-// Helper function to update course enrollments count
-async function updateCourseEnrollments(courseId, increment = 1) {
-  try {
-    // To be implemented - would get the course, update enrollments count, and save it
-    console.log(`Incrementing course ${courseId} enrollments by ${increment}`);
-  } catch (error) {
-    console.error(`Error updating enrollments for course ${courseId}:`, error);
-  }
-}

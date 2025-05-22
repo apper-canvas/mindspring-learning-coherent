@@ -8,6 +8,7 @@ import { getIcon } from '../utils/iconUtils';
 // Services
 import { getCourseById } from '../services/courseService';
 import { enrollUserInCourse, isUserEnrolled } from '../services/userCourseService';
+import { getResourcesByCourseId } from '../services/resourceService';
 import CourseResources from '../components/CourseResources';
 
 // Icons
@@ -43,6 +44,7 @@ const CourseDetail = () => {
   const { isAuthenticated, user } = useSelector(state => state.user);
   const [isDownloading, setIsDownloading] = useState(false);
 
+  // Load course details
   useEffect(() => {
     const fetchCourseDetails = async () => {
       setLoading(true);
@@ -61,6 +63,8 @@ const CourseDetail = () => {
           setIsEnrolled(enrolled);
         }
         
+        // Get related courses
+        // This would be an API call to get courses in the same category
         // Get related courses
         // This would normally be a separate API call with filters
         if (foundCourse.category) {
@@ -81,6 +85,8 @@ const CourseDetail = () => {
     if (courseId) {
       fetchCourseDetails();
     }
+    
+    return () => setLoading(false);
   }, [courseId, isAuthenticated, user]);
 
   const handleEnroll = async () => {
@@ -98,10 +104,14 @@ const CourseDetail = () => {
     setIsEnrolling(true);
     
     try {
-      await enrollUserInCourse(user.userId, courseId);
+      const response = await enrollUserInCourse(user.userId, courseId);
       toast.success(`Successfully enrolled in ${course.title || course.Name}!`);
       setIsEnrolled(true);
-      // Optionally navigate to dashboard or course content
+      
+      // Optionally navigate to course content page or dashboard
+      setTimeout(() => {
+        navigate('/dashboard');
+      }, 1500);
     } catch (error) {
       console.error('Enrollment error:', error);
       toast.error('Failed to enroll in course. Please try again.');
@@ -275,21 +285,20 @@ const CourseDetail = () => {
       </div>
       {/* Course Resources - In a real app, we would fetch resources for this course */}
       {false && (
-        <div className="mb-12">
-          <div className="card">
-            <div className="p-6">
-              <h2 className="text-xl font-bold mb-4 flex items-center">
-                <FileTextIcon className="w-5 h-5 mr-2 text-primary" />
-                Course Resources
-              </h2>
-              <p className="text-surface-600 dark:text-surface-400 mb-6">
-                Download these materials to enhance your learning experience. These resources are available offline once downloaded.
-              </p>
-              <CourseResources courseId={course.Id} resources={[]} />
-            </div>
-          </div>
+      <div className="mb-12">
+        <div className="card">
+          <div className="p-6">
+            <h2 className="text-xl font-bold mb-4 flex items-center">
+              <FileTextIcon className="w-5 h-5 mr-2 text-primary" />
+              Course Resources
+            </h2>
+            <p className="text-surface-600 dark:text-surface-400 mb-6">
+              Download these materials to enhance your learning experience. These resources are available offline once downloaded.
+            </p>
+            <CourseResources courseId={course.Id} />
         </div>
       )}
+      </div>
 
     </div>
   );

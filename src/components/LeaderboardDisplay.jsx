@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { motion, AnimatePresence } from 'framer-motion';
+import { getLeaderboardEntries } from '../services/leaderboardService';
 import { toast } from 'react-toastify';
 import { 
   fetchLeaderboard, 
@@ -26,13 +27,49 @@ const ClockIcon = getIcon('clock');
 const LeaderboardDisplay = ({ courseId = 1, courseTitle = "JavaScript Fundamentals" }) => {
   const dispatch = useDispatch();
   const leaderboard = useSelector(selectCurrentLeaderboard);
-  const isLoading = useSelector(selectLeaderboardLoading);
+  const isLoadingFromStore = useSelector(selectLeaderboardLoading);
   const [selectedPeriod, setSelectedPeriod] = useState(LEADERBOARD_PERIODS.WEEKLY);
   const [displayCount, setDisplayCount] = useState(10);
-
+  const [entries, setEntries] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [currentUser, setCurrentUser] = useState(null);
+  
+  const isLoading = loading || isLoadingFromStore;
+  
   // Load leaderboard data
   useEffect(() => {
-    dispatch(fetchLeaderboard({ courseId, period: selectedPeriod }));
+    const fetchData = async () => {
+      setLoading(true);
+      setError(null);
+      
+      try {
+        const leaderboardData = await getLeaderboardEntries(courseId, selectedPeriod);
+        
+        // Set entries with user data (need to get user information for each entry)
+        // In a real app, we would get this from a join or related records
+        const entriesWithUsers = leaderboardData.map(entry => ({
+          ...entry,
+          name: `User ${entry.rank}`, // In real app, this would be the user's actual name
+          avatar: `https://ui-avatars.com/api/?name=User+${entry.rank}&background=random`,
+          lastActive: "recently",
+          isCurrentUser: false // Would be determined by comparing to current user
+        }));
+        
+        setEntries(entriesWithUsers);
+        
+        // Also dispatch to Redux store to maintain existing functionality
+        dispatch(fetchLeaderboard({ courseId, period: selectedPeriod }));
+      } catch (err) {
+        console.error("Error fetching leaderboard:", err);
+        setError("Could not load leaderboard data");
+        toast.error("Failed to load leaderboard");
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchData();
   }, [dispatch, courseId, selectedPeriod]);
 
   // Handle period change
@@ -42,8 +79,20 @@ const LeaderboardDisplay = ({ courseId = 1, courseTitle = "JavaScript Fundamenta
   };
 
   // Handle refresh
-  const handleRefresh = () => {
-    dispatch(refreshLeaderboard({ courseId, period: selectedPeriod }));
+  const handleRefresh = async () => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const refreshedData = await getLeaderboardEntries(courseId, selectedPeriod);
+      dispatch(refreshLeaderboard({ courseId, period: selectedPeriod }));
+      toast.success("Leaderboard refreshed");
+    } catch (err) {
+      setError("Failed to refresh leaderboard");
+      toast.error("Could not refresh leaderboard");
+    } finally {
+      setLoading(false);
+    }
   };
 
   // Show more entries
@@ -68,13 +117,15 @@ const LeaderboardDisplay = ({ courseId = 1, courseTitle = "JavaScript Fundamenta
   const renderEntries = () => {
     if (!leaderboard || !leaderboard.entries) return null;
     
-    const entriesToShow = leaderboard.entries.slice(0, displayCount);
+    // Use either Redux store data or direct API data
+    const dataToRender = leaderboard.entries || entries;
+    const entriesToShow = dataToRender.slice(0, displayCount);
     
     return (
       <AnimatePresence>
         {entriesToShow.map((entry, index) => (
           <motion.tr 
-            key={entry.id}
+            key={entry.Id || index}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.2, delay: index * 0.05 }}
@@ -98,10 +149,10 @@ const LeaderboardDisplay = ({ courseId = 1, courseTitle = "JavaScript Fundamenta
                 </div>
               </div>
             </td>
-            <td className="text-center">{entry.completionPercentage}%</td>
-            <td className="text-center">{entry.quizScore}</td>
-            <td className="text-center">{entry.badgesEarned}</td>
-            <td className="text-center font-bold">{formatNumber(entry.points)}</td>
+            <td className="text-center">{entry.completionPercentage || 0}%</td>
+            <td className="text-center">{entry.quizScore || 0}</td>
+            <td className="text-center">{entry.badgesEarned || 0}</td>
+            <td className="text-center font-bold">{formatNumber(entry.points || 0)}</td>
           </motion.tr>
         ))}
       </AnimatePresence>
@@ -119,7 +170,7 @@ const LeaderboardDisplay = ({ courseId = 1, courseTitle = "JavaScript Fundamenta
           <button 
             onClick={handleRefresh} 
             className="p-2 rounded-full hover:bg-surface-100 dark:hover:bg-surface-700 transition-colors"
-            disabled={isLoading}
+            disabled={loading}
             title="Refresh leaderboard"
           >
             <RefreshIcon className={`w-4 h-4 ${isLoading ? 'animate-spin text-primary' : 'text-surface-500 dark:text-surface-400'}`} />
@@ -177,7 +228,7 @@ const LeaderboardDisplay = ({ courseId = 1, courseTitle = "JavaScript Fundamenta
 
       {/* Leaderboard Table */}
       <div className="overflow-x-auto">
-        {isLoading && !leaderboard ? (
+        {(isLoading && (!leaderboard || !entries.length)) ? (
           <div className="p-8 text-center">
             <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
             <p className="text-surface-500 dark:text-surface-400">Loading leaderboard...</p>
@@ -200,7 +251,7 @@ const LeaderboardDisplay = ({ courseId = 1, courseTitle = "JavaScript Fundamenta
       </div>
       
       {/* Show more button */}
-      {leaderboard && displayCount < leaderboard.entries.length && (
+      {leaderboard && leaderboard.entries && displayCount < leaderboard.entries.length && (
         <div className="p-3 text-center border-t border-surface-200 dark:border-surface-700">
           <button onClick={handleShowMore} className="text-primary hover:text-primary-dark text-sm font-medium">Show More</button>
         </div>

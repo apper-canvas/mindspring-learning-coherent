@@ -27,13 +27,19 @@ const CommunityPost = ({ post, onAction, onAddComment }) => {
   // Handle submitting a new comment
   const handleSubmitComment = (e) => {
     e.preventDefault();
-    onAddComment(commentText);
+    if (!commentText.trim()) {
+      return;
+    }
+    
+    onAddComment(post.Id, commentText);
     setCommentText('');
     setShowCommentForm(false);
   };
 
   // Get category label and color
   const getCategoryDisplay = (category) => {
+    if (!category) return { label: 'Discussion', color: 'bg-gray-100 dark:bg-gray-900/30 text-gray-600 dark:text-gray-400' };
+    
     const categories = {
       'questions': { label: 'Question', color: 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400' },
       'study-groups': { label: 'Study Group', color: 'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400' },
@@ -55,15 +61,20 @@ const CommunityPost = ({ post, onAction, onAddComment }) => {
       <div className="p-5">
         {/* Post header with author info */}
         <div className="flex items-start mb-3">
+          {/* Use avatar from post author if available, otherwise use a placeholder */}
           <img 
-            src={post.author.avatar} 
-            alt={post.author.name}
+            src={post.author?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(post.author?.name || 'User')}&background=random`} 
+            alt={post.author?.name || 'User'}
             className="w-10 h-10 rounded-full object-cover mr-3"
           />
           <div className="flex-1">
             <div className="flex flex-wrap items-center gap-2">
-              <h3 className="font-medium">{post.author.name}</h3>
-              {post.author.role && (
+              <h3 className="font-medium">
+                {post.author?.name || 'Anonymous User'}
+              </h3>
+              
+              {/* Show role badge if available */}
+              {post.author?.role && (
                 <span className="text-xs px-2 py-1 bg-surface-100 dark:bg-surface-700 rounded-full text-surface-600 dark:text-surface-400">
                   {post.author.role}
                 </span>
@@ -97,7 +108,7 @@ const CommunityPost = ({ post, onAction, onAddComment }) => {
         {/* Post actions */}
         <div className="flex items-center space-x-6 text-surface-600 dark:text-surface-400 border-t border-surface-200 dark:border-surface-700 pt-3">
           <button 
-            onClick={() => onAction('like')}
+            onClick={() => onAction('like', post.Id)}
             className={`flex items-center space-x-1 ${post.isLiked ? 'text-red-500' : 'hover:text-red-500'}`}
           >
             <HeartIcon className={`w-5 h-5 ${post.isLiked ? 'fill-current' : ''}`} />
@@ -109,11 +120,11 @@ const CommunityPost = ({ post, onAction, onAddComment }) => {
             className="flex items-center space-x-1 hover:text-primary"
           >
             <MessageSquareIcon className="w-5 h-5" />
-            <span>{post.comments.length}</span>
+            <span>{post.comments?.length || 0}</span>
           </button>
           
           <button 
-            onClick={() => onAction('share')}
+            onClick={() => onAction('share', post.Id)}
             className="flex items-center space-x-1 hover:text-primary"
           >
             <ShareIcon className="w-5 h-5" />

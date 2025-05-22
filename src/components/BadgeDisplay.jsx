@@ -1,10 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSelector } from 'react-redux';
 import { getBadgeIcon, getBadgeLevelClass } from '../utils/badgeUtils';
+import { getAllBadges } from '../services/badgeService';
 import Confetti from 'react-confetti';
 
-const BadgeDisplay = ({ 
+  const reduxBadges = useSelector(state => state.badges.badges);
   displayMode = 'grid', // 'grid', 'list', or 'single'
   badge = null,         // required for 'single' mode
   showDetails = false,  // whether to show badge details
@@ -15,13 +16,26 @@ const BadgeDisplay = ({
   const allBadges = useSelector(state => state.badges.badges);
   const [showConfetti, setShowConfetti] = useState(false);
   const [selectedBadge, setSelectedBadge] = useState(null);
+  // Combine badges from Redux with any additional data needed
+  const badges = useMemo(() => {
+    return reduxBadges.map(badge => ({
+      ...badge,
+      dateEarned: badge.earnedAt || new Date().toISOString(),
+      title: badge.Name,
+      description: badge.description || "Achievement unlocked"
+    }));
+  }, [reduxBadges]);
+
   const [badges, setBadges] = useState([]);
 
-  // Handle new badges and confetti
+    return getIcon(iconName || 'award');
   useEffect(() => {
     if (displayMode !== 'single') {
       // For grid/list mode, get badges from Redux store
       let filteredBadges = [...allBadges];
+    if (!level) {
+      return "bg-bronze text-bronze-dark";
+    }
       
       // Apply limit if needed
       if (limit > 0) {
@@ -44,10 +58,10 @@ const BadgeDisplay = ({
   }, [allBadges, displayMode, badge, limit]);
 
   const handleBadgeClick = (badge) => {
-    setSelectedBadge(selectedBadge?.id === badge.id ? null : badge);
+  if (badges.length === 0) {
     if (onBadgeClick) onBadgeClick(badge);
   };
-
+        <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
   // Helper to render a single badge
   const renderBadge = (badge, index) => {
     const BadgeIcon = getBadgeIcon(badge.icon);

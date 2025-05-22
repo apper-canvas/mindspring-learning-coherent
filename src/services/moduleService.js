@@ -86,7 +86,6 @@ export const createModule = async (moduleData) => {
       apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
     });
 
-    // Only include updateable fields
     const params = {
       records: [{
         Name: moduleData.title,
@@ -95,7 +94,7 @@ export const createModule = async (moduleData) => {
         duration: moduleData.duration,
         videoUrl: moduleData.videoUrl,
         orderIndex: moduleData.orderIndex,
-        isDownloadable: moduleData.isDownloadable || false,
+        isDownloadable: moduleData.isDownloadable,
         courseId: moduleData.courseId
       }]
     };
@@ -108,20 +107,33 @@ export const createModule = async (moduleData) => {
   }
 };
 
-// Update module progress
-export const updateModuleProgress = async (moduleId, isCompleted) => {
+// Update a module
+export const updateModule = async (moduleId, moduleData) => {
   try {
-    // In a real implementation, we would update the module_progress table
-    // For this example, we're just updating the module_progress in localStorage
-    const key = `module_progress_${moduleId}`;
-    localStorage.setItem(key, JSON.stringify({
-      moduleId,
-      completed: isCompleted,
-      lastUpdated: new Date().toISOString()
-    }));
-    return true;
+    const { ApperClient } = window.ApperSDK;
+    const apperClient = new ApperClient({
+      apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
+      apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
+    });
+
+    const params = {
+      records: [{
+        Id: moduleId,
+        Name: moduleData.title,
+        title: moduleData.title,
+        description: moduleData.description,
+        duration: moduleData.duration,
+        videoUrl: moduleData.videoUrl,
+        orderIndex: moduleData.orderIndex,
+        isDownloadable: moduleData.isDownloadable,
+        courseId: moduleData.courseId
+      }]
+    };
+
+    const response = await apperClient.updateRecord("course_module", params);
+    return response;
   } catch (error) {
-    console.error(`Error updating progress for module ${moduleId}:`, error);
+    console.error(`Error updating module with ID ${moduleId}:`, error);
     throw error;
   }
 };

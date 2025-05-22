@@ -4,7 +4,8 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { toast } from 'react-toastify';
 import { getIcon } from '../utils/iconUtils';
-import { fetchDashboardData } from '../store/dashboardSlice';
+import { getUserEnrolledCourses } from '../services/userCourseService';
+import { getUserProfile } from '../services/userService';
 
 // Dashboard Components
 import CourseProgress from '../components/dashboard/CourseProgress';
@@ -26,7 +27,7 @@ const Dashboard = () => {
   const location = useLocation();
   const navigate = useNavigate();
   
-  const { 
+  const oldState = useSelector(state => state.dashboard);
     enrolledCourses, 
     streakData, 
     achievements,
@@ -35,9 +36,18 @@ const Dashboard = () => {
     totalLearningTime,
     loading,
     error
-  } = useSelector(state => state.dashboard);
+  } = oldState;
+  
+  const { user, isAuthenticated } = useSelector(state => state.user);
+  const [userEnrolledCourses, setUserEnrolledCourses] = useState([]);
+  const [userProfile, setUserProfile] = useState(null);
+  const [loadingCourses, setLoadingCourses] = useState(false);
+  const [loadingProfile, setLoadingProfile] = useState(false);
+  const [dashboardError, setDashboardError] = useState(null);
 
-  // Parse URL parameters to get active tab and selected course
+  const isLoading = loadingCourses || loadingProfile || loading;
+  
+  // Parse URL parameters to get active tab
   const params = new URLSearchParams(location.search);
   const tabFromUrl = params.get('tab');
   const courseFromUrl = params.get('course');
@@ -45,22 +55,54 @@ const Dashboard = () => {
   const [activeTab, setActiveTab] = useState(tabFromUrl || 'courses');
   const [selectedCourseId, setSelectedCourseId] = useState(courseFromUrl || null);
 
-  
-  // Fetch dashboard data when component mounts
+  // Fetch user's enrolled courses
   useEffect(() => {
-    dispatch(fetchDashboardData())
-      .unwrap()
-      .catch(error => {
-        toast.error('Failed to load dashboard data');
-      });
-  }, [dispatch]);
+    const fetchEnrolledCourses = async () => {
+      if (!isAuthenticated || !user?.userId) return;
+      
+      setLoadingCourses(true);
+      try {
+        const enrolledCourses = await getUserEnrolledCourses(user.userId);
+        setUserEnrolledCourses(enrolledCourses);
+      } catch (error) {
+        console.error("Error fetching enrolled courses:", error);
+        setDashboardError("Failed to load your enrolled courses");
+        toast.error("Could not load your enrolled courses");
+      } finally {
+        setLoadingCourses(false);
+      }
+    };
+    
+    fetchEnrolledCourses();
+  }, [isAuthenticated, user]);
+  
+  // Fetch user profile
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      if (!isAuthenticated) return;
+      
+      setLoadingProfile(true);
+      try {
+        const profile = await getUserProfile();
+        setUserProfile(profile);
+      } catch (error) {
+        console.error("Error fetching user profile:", error);
+        toast.error("Could not load your profile data");
+      } finally {
+        setLoadingProfile(false);
+      }
+    };
+    
+    fetchUserProfile();
+  }, [isAuthenticated]);
 
+  // Get user's first name for greeting
+  const userName = userProfile?.fullName?.split(' ')[0] || 
+                   user?.firstName || 
+                   "Student";
   // Update URL when tab changes
   const setActiveTabWithNavigation = (tab, courseId = null) => {
     setActiveTab(tab);
-    navigate(`/dashboard?tab=${tab}${courseId ? `&course=${courseId}` : ''}`);
-  };
-  
   // Get user's first name for greeting (would come from auth in a real app)
   const userName = "User";
   
@@ -71,16 +113,22 @@ const Dashboard = () => {
     if (hour < 18) return 'Good afternoon';
     return 'Good evening';
   };
-  
+    // Refresh data
+    setLoadingCourses(true);
+    setLoadingProfile(true);
+    
+    // Re-fetch data
+    getUserEnrolledCourses(user.userId).then(setUserEnrolledCourses).finally(() => setLoadingCourses(false));
+    getUserProfile().then(setUserProfile).finally(() => setLoadingProfile(false));
   const refreshDashboard = () => {
     toast.info('Refreshing dashboard data...');
     dispatch(fetchDashboardData());
-  };
+  if (dashboardError) {
   
   // Show error state if data loading failed
   if (error) {
     return (
-      <div className="container mx-auto px-4 py-8">
+          <p className="text-red-700 dark:text-red-300 mb-4">{dashboardError}</p>
         <div className="p-6 bg-red-50 dark:bg-red-900/20 rounded-xl border border-red-200 dark:border-red-800 text-center">
           <h2 className="text-xl font-bold mb-2 text-red-800 dark:text-red-400">Failed to load dashboard</h2>
           <p className="text-red-700 dark:text-red-300 mb-4">{error}</p>
@@ -108,10 +156,10 @@ const Dashboard = () => {
         
         <button 
           onClick={refreshDashboard} 
-          disabled={loading}
+          disabled={isLoading}
           className="btn-ghost flex items-center text-sm py-1.5"
         >
-          <RefreshIcon className={`w-4 h-4 mr-1.5 ${loading ? 'animate-spin' : ''}`} />
+          <RefreshIcon className={`w-4 h-4 mr-1.5 ${isLoading ? 'animate-spin' : ''}`} />
           Refresh
         </button>
       </div>
@@ -146,11 +194,11 @@ const Dashboard = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Main Content - Changes based on active tab */}
         <div className={activeTab === 'courses' ? 'block' : 'hidden lg:block'}>
-          <CourseProgress courses={enrolledCourses} loading={loading} />
+          <CourseProgress courses={userEnrolledCourses} loading={loadingCourses} />
         </div>
         
         <div className={activeTab === 'upcoming' ? 'block' : 'hidden lg:block'}>
-          <UpcomingLessons courses={enrolledCourses} loading={loading} />
+          <UpcomingLessons courses={userEnrolledCourses} loading={loadingCourses} />
         </div>
         
         <div className={activeTab === 'achievements' ? 'block' : 'hidden lg:block'}>
@@ -169,9 +217,9 @@ const Dashboard = () => {
         
         <div className={activeTab === 'progress' ? 'block' : 'hidden lg:block'}>
           <CourseProgressTracker 
-            courses={enrolledCourses} 
+            courses={userEnrolledCourses} 
             selectedCourseId={selectedCourseId}
-            loading={loading} 
+            loading={loadingCourses} 
           />
         </div>
       </div>

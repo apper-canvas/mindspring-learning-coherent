@@ -4,8 +4,7 @@ import { motion } from 'framer-motion';
 import { Search, Filter, BookOpen, ChevronDown, ChevronUp } from 'lucide-react';
 import { toast } from 'react-toastify';
 import CourseCard from '../components/CourseCard';
-import { useSelector } from 'react-redux';
-import { TypeInfo } from '../utils/typeUtils';
+import { useSelector, useDispatch } from 'react-redux';
 import { getCourses } from '../services/courseService';
 
 const Courses = () => {
@@ -47,14 +46,12 @@ const Courses = () => {
         searchTerm: searchTerm || undefined
       });
 
-      // Validate and format course data using TypeInfo
-      const formattedCourses = coursesData.map(course => ({
-        ...course,
-        rating: TypeInfo.Decimal.format(course.rating),
-        enrollments: TypeInfo.Number.format(course.enrollments)
-      }));
+      if (!coursesData) {
+        setCourses([]);
+        return;
+      }
 
-      setCourses(formattedCourses);
+      setCourses(coursesData);
       setError(null);
     } catch (err) {
       console.error('Error fetching courses:', err);

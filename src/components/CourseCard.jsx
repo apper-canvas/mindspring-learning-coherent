@@ -66,7 +66,7 @@ const CourseCard = ({ course, onDeleteClick }) => {
     setIsEnrolling(true);
     
     try {
-      await enrollUserInCourse(user.userId, course.Id);
+      const response = await enrollUserInCourse(user.userId, course.Id);
       toast.success(`Successfully enrolled in ${course.title}!`);
       navigate(`/courses/${course.Id}`);
     } catch (error) {
@@ -83,8 +83,13 @@ const CourseCard = ({ course, onDeleteClick }) => {
     setIsDownloading(true);
     
     try {
-      // TODO: Implement offline download logic using IndexedDB
-      toast.success(`${course.title} is now available offline`);
+      // Dispatch to offline slice
+      dispatch({
+        type: 'offline/downloadCourse',
+        payload: course
+      });
+      
+      toast.success(`${course.title || course.Name} is now being downloaded for offline use`);
     } catch (error) {
       toast.error('Failed to download course for offline use.');
     } finally {

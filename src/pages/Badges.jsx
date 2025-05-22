@@ -1,12 +1,15 @@
 import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { motion } from 'framer-motion';
-import { fetchBadges } from '../store/badgeSlice';
+import { toast } from 'react-toastify';
 import BadgeDisplay from '../components/BadgeDisplay';
 import { BADGE_CATEGORIES, BADGE_LEVELS } from '../utils/badgeUtils';
+import { getUserBadges } from '../services/badgeService';
 
 const Badges = () => {
   const dispatch = useDispatch();
+  const { user, isAuthenticated } = useSelector(state => state.user);
+  const [userBadges, setUserBadges] = useState([]);
   const { badges, isLoading } = useSelector(state => state.badges);
   const [filterCategory, setFilterCategory] = useState('all');
   const [filterLevel, setFilterLevel] = useState('all');
@@ -18,15 +21,40 @@ const Badges = () => {
     points: 0
   });
 
-  // Fetch badges on component mount
+  // Fetch user's badges from API
   useEffect(() => {
-    dispatch(fetchBadges());
-  }, [dispatch]);
+    const fetchUserBadges = async () => {
+      if (!isAuthenticated || !user?.userId) {
+        return;
+      }
+      
+      try {
+        const badges = await getUserBadges(user.userId);
+        
+        // Process badges to add additional information
+        // In a real app, this would include looking up badge details
+        const processedBadges = badges.map(badge => ({
+          ...badge,
+          icon: badge.icon || "award",
+          level: badge.level || "bronze",
+          category: badge.category || "achievement"
+        }));
+        
+        setUserBadges(processedBadges);
+      } catch (error) {
+        console.error("Error fetching user badges:", error);
+        toast.error("Failed to load your badges");
+      }
+    };
+    
+    fetchUserBadges();
+  }, [isAuthenticated, user]);
 
   // Calculate stats and apply filters when badges change
   useEffect(() => {
     // Apply filters
-    let filtered = [...badges];
+    const allBadges = [...badges, ...userBadges];
+    let filtered = [...allBadges];
     
     if (filterCategory !== 'all') {
       filtered = filtered.filter(badge => badge.category === filterCategory);
@@ -40,10 +68,10 @@ const Badges = () => {
     
     // Calculate stats
     const stats = {
-      total: badges.length,
+      total: allBadges.length,
       byCategory: {},
       byLevel: {},
-      points: badges.reduce((sum, badge) => sum + badge.points, 0)
+      points: allBadges.reduce((sum, badge) => sum + (badge.points || 0), 0)
     };
     
     // Count by category
@@ -57,7 +85,7 @@ const Badges = () => {
     });
     
     setBadgeStats(stats);
-  }, [badges, filterCategory, filterLevel]);
+  }, [badges, userBadges, filterCategory, filterLevel]);
 
   // Group badges by category for display
   const getBadgesByCategory = () => {
@@ -139,7 +167,7 @@ const Badges = () => {
             {Object.entries(BADGE_LEVELS).map(([key, value]) => (
               <option key={key} value={value}>
                 {key.charAt(0) + key.slice(1).toLowerCase()}
-              </option>
+      {isLoading && filteredBadges.length === 0 ? (
             ))}
           </select>
         </div>
