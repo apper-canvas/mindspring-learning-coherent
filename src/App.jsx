@@ -207,32 +207,4 @@ function App() {
   }, [dispatch]);
 }
 
-// Handle online/offline status
-useEffect(() => {
-  const handleOnline = () => {
-    dispatch(checkNetworkStatus(true));
-    toast.success('You are back online!');
-    
-    // Sync offline progress with server when connection is restored
-    dispatch(syncOfflineProgress());
-  };
-
-  const handleOffline = () => {
-    dispatch(checkNetworkStatus(false));
-    toast.info('You are offline. Your progress will be saved locally.');
-  };
-
-  // Check initial status
-  dispatch(checkNetworkStatus(navigator.onLine));
-  
-  // Set up event listeners for online/offline status changes
-  window.addEventListener('online', handleOnline);
-  window.addEventListener('offline', handleOffline);
-
-  return () => {
-    window.removeEventListener('online', handleOnline);
-    window.removeEventListener('offline', handleOffline);
-  };
-}, [dispatch]);
-
 export default App;
