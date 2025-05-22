@@ -26,6 +26,7 @@ const MessageCircleIcon = getIcon('message-circle');
 const BriefcaseIcon = getIcon('briefcase');
 const FileIcon = getIcon('file');
 const FileTextIcon = getIcon('file-text');
+const EditIcon = getIcon('edit');
 const ChevronDownIcon = getIcon('chevron-down');
 
 const CourseDetail = () => {
@@ -217,6 +218,15 @@ const CourseDetail = () => {
                   <p className="text-primary">{course.instructor}</p>
                 </div>
               </div>
+              {isAuthenticated && (
+                <div className="mt-4">
+                  <Link to={`/courses/edit/${courseId}`} className="btn-outline flex items-center w-fit">
+                    <EditIcon className="w-4 h-4 mr-2" />
+                    Edit Course
+                  </Link>
+                </div>
+              )}
+              
             </div>
           </div>
           <div className="md:w-1/3">

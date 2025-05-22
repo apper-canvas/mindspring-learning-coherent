@@ -174,3 +174,36 @@ export const createCourse = async (courseData) => {
     throw error;
   }
 };
+
+// Update an existing course
+export const updateCourse = async (courseId, courseData) => {
+  try {
+    const { ApperClient } = window.ApperSDK;
+    const apperClient = new ApperClient({
+      apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
+      apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
+    });
+
+    // Only include updateable fields and the ID
+    const params = {
+      records: [{
+        Id: courseId,
+        Name: courseData.title,
+        title: courseData.title,
+        description: courseData.description,
+        instructor: courseData.instructor,
+        category: courseData.category,
+        difficulty: courseData.difficulty,
+        duration: courseData.duration,
+        imageUrl: courseData.imageUrl,
+        Tags: courseData.Tags
+      }]
+    };
+
+    const response = await apperClient.updateRecord("course", params);
+    return response;
+  } catch (error) {
+    console.error(`Error updating course with ID ${courseId}:`, error);
+    throw error;
+  }
+};

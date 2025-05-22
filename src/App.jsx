@@ -22,6 +22,7 @@ import CourseDetail from './pages/CourseDetail';
 import ProfilePage from './pages/ProfilePage';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
+import EditCourse from './pages/EditCourse';
 import CreateCourse from './pages/CreateCourse';
 
 // Components
@@ -167,6 +168,7 @@ function App() {
             <Route path="/error" element={<ErrorPage />} />
             <Route path="/courses" element={<Courses />} />
             <Route path="/courses/:id" element={<CourseDetail />} />
+            <Route path="/courses/edit/:id" element={<ProtectedRoute element={<EditCourse />} />} />
             <Route path="/courses/create" element={<ProtectedRoute element={<CreateCourse />} />} />
             <Route path="/explore" element={<Explore />} />
             <Route path="/community" element={<Community />} />
