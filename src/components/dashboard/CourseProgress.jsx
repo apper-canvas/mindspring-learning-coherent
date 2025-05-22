@@ -100,6 +100,7 @@ const CourseProgress = ({ courses, loading }) => {
                 <motion.div 
                   initial={{ width: 0 }}
                   animate={{ width: `${course.progress}%` }}
+                  transition={{ duration: 0.5, ease: "easeOut" }}
                 <div className="bg-primary h-2.5 rounded-full" style={{ width: `${course.progress}%` }}></div>
               </div>
             </div>
