@@ -142,12 +142,13 @@ const Courses = () => {
   };
 
   return (
+    // Check for error state first and show error message if needed
+    error ? (
+      <div className="container mx-auto px-4 py-8 text-center">Error: {error}</div>
+    ) : (
     <div className="container mx-auto px-4 py-8">
       {/* Courses Header */}
       <section className="mb-8">
-  if (error) {
-    return <div className="container mx-auto px-4 py-8 text-center">Error: {error}</div>;
-  }
 
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
           <div>
@@ -283,6 +284,7 @@ const Courses = () => {
         )}
       </section>
     </div>
+    )
   );
 };
 
