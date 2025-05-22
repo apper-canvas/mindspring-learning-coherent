@@ -90,37 +90,13 @@ const badgeSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-          const badge = createBadge(BADGE_TYPES.COURSE_COMPLETE, 'gold', BADGE_CATEGORIES.COMPLETION, courseTitle);
-          return await awardBadgeToUser(getState().user.user?.userId, badge.id, courseId, courseTitle);
+      .addCase(fetchUserBadges.pending, (state) => {
         state.isLoading = true;
+        state.error = null;
       })
-      .addCase(fetchBadges.fulfilled, (state, action) => {
+      .addCase(fetchUserBadges.fulfilled, (state, action) => {
         state.badges = action.payload;
         state.isLoading = false;
-      })
-          const badge = createBadge(BADGE_TYPES.QUIZ_MASTER, 'gold', BADGE_CATEGORIES.ACHIEVEMENT, courseTitle);
-          return await awardBadgeToUser(getState().user.user?.userId, badge.id, courseId, courseTitle);
-        state.error = action.error.message;
-        state.isLoading = false;
-      })
-      .addCase(checkAndAwardBadge.fulfilled, (state, action) => {
-        if (action.payload) {
-          state.badges.push(action.payload);
-        }
-      });
-  }
-});
-
-export default badgeSlice.reducer;
-      .addCase(fetchUserBadges.pending, (state) => {
-      .addCase(fetchUserBadges.fulfilled, (state, action) => {
-      .addCase(fetchUserBadges.rejected, (state, action) => {
-      .addCase(fetchUserBadges.pending, (state) => {
-          dispatch(fetchUserBadges());
-        state.error = null;
-          toast.success(`🏆 Badge Earned!`, {
-      .addCase(fetchUserBadges.fulfilled, (state, action) => {
-        state.error = null;
       })
       .addCase(fetchUserBadges.rejected, (state, action) => {
         state.isLoading = false;
@@ -128,17 +104,26 @@ export default badgeSlice.reducer;
       })
       .addCase(checkAndAwardBadge.pending, (state) => {
         // Optional: Could set a specific loading state for badge awarding
+        state.error = null;
       })
-      .addCase(checkAndAwardBadge.rejected, (state, action) => {
-        // Handle errors if needed
-        state.error = action.error.message;
       .addCase(checkAndAwardBadge.fulfilled, (state, action) => {
         if (action.payload && action.payload.success !== false) {
           state.badges.push(action.payload);
         }
+      })
+      .addCase(checkAndAwardBadge.rejected, (state, action) => {
+        // Handle errors if needed
+        state.error = action.error.message;
+      })
       .addCase(markBadgeAsViewed.fulfilled, (state, action) => {
         if (action.payload) {
           const badgeIndex = state.badges.findIndex(badge => badge.id === action.payload);
           if (badgeIndex !== -1) {
             state.badges[badgeIndex].isNew = false;
           }
+        }
+      });
+  }
+});
+
+export default badgeSlice.reducer;

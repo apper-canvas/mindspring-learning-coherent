@@ -167,7 +167,7 @@ const Badges = () => {
             {Object.entries(BADGE_LEVELS).map(([key, value]) => (
               <option key={key} value={value}>
                 {key.charAt(0) + key.slice(1).toLowerCase()}
-      {isLoading && filteredBadges.length === 0 ? (
+              </option>
             ))}
           </select>
         </div>
@@ -180,7 +180,9 @@ const Badges = () => {
           categoryBadges.length > 0 && (
             <div key={category} className="mb-8">
               <h2 className="text-xl font-semibold mb-4 capitalize">{category} Badges</h2>
-              <BadgeDisplay showDetails={true} className="mb-4" />
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                {categoryBadges.map(badge => <BadgeDisplay key={badge.id} badge={badge} showDetails={true} className="mb-4" />)}
+              </div>
             </div>
           )
         ))
