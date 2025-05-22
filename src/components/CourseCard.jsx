@@ -95,25 +95,24 @@ const CourseCard = ({ course }) => {
         whileHover={{ y: -5 }}
         transition={{ duration: 0.2 }}
         className="card overflow-hidden flex flex-col h-full"
-            src={course.imageUrl || `https://images.unsplash.com/photo-1501504905252-473c47e087f8?q=80&w=500`} 
-            alt={course.title || course.Name} 
+      >
         <div className="relative">
           <img 
-            src={course.imageUrl} 
-            alt={course.title} 
+            src={course.imageUrl || `https://images.unsplash.com/photo-1501504905252-473c47e087f8?q=80&w=500`} 
+            alt={course.title || course.Name} 
             className="w-full h-48 object-cover"
           />
-            {/* Removed resources badge as it's not directly available in the API response */}
-            {false && (
+          {/* Removed resources badge as it's not directly available in the API response */}
+          {false && (
             <span className={`text-xs font-medium px-2 py-1 rounded-full ${getDifficultyColor(course.difficulty)}`}>
-                <FileIcon className="w-3 h-3 mr-1" /> resources
+              <FileIcon className="w-3 h-3 mr-1" /> resources
             </span>
-            {course.resources?.length > 0 && (
-              <span className="absolute -bottom-7 right-0 bg-primary/10 text-primary text-xs font-medium px-2 py-1 rounded-full flex items-center">
-                <FileIcon className="w-3 h-3 mr-1" /> {course.resources.length} resources
-              </span>
-            )}
-          </div>
+          )}
+          {course.resources?.length > 0 && (
+            <span className="absolute -bottom-7 right-0 bg-primary/10 text-primary text-xs font-medium px-2 py-1 rounded-full flex items-center">
+              <FileIcon className="w-3 h-3 mr-1" /> {course.resources.length} resources
+            </span>
+          )}
         </div>
         
         {/* Course Content */}
