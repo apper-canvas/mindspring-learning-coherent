@@ -211,7 +211,7 @@ export const updateCourse = async (courseId, courseData) => {
 // Delete a course
 export const deleteCourse = async (courseId) => {
   try {
-    const { ApperClient } = window.ApperSDK;
+    const { ApperClient } = window.ApperSDK || {};
     const apperClient = new ApperClient({
       apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
       apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY

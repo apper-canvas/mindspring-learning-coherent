@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useSearchParams } from 'react-router-dom';
-import { motion, AnimatePresence, useAnimation } from 'framer-motion';
+import { getCourses, deleteCourse } from '../services/courseService.js';
 import { useContext } from 'react';
 import { toast } from 'react-toastify';
 import { getIcon } from '../utils/iconUtils';
