@@ -1,8 +1,11 @@
 import { useState } from 'react';
+import { useSelector } from 'react-redux';
 import { motion } from 'framer-motion';
 import { toast } from 'react-toastify';
 import { getIcon } from '../utils/iconUtils';
 import MainFeature from '../components/MainFeature';
+import DownloadManager from '../components/DownloadManager';
+
 
 // Icons
 const SearchIcon = getIcon('search');
@@ -14,6 +17,7 @@ const BrainIcon = getIcon('brain');
 const GraduationCapIcon = getIcon('graduation-cap');
 const MicIcon = getIcon('mic');
 const PaintBrushIcon = getIcon('paint-brush');
+const WifiOffIcon = getIcon('wifi-off');
 const ArrowRightIcon = getIcon('arrow-right');
 
 // Course categories
@@ -30,6 +34,7 @@ const categories = [
 ];
 
 const Home = () => {
+  const isOnline = useSelector(state => state.offline.isOnline);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('programming');
 
@@ -147,6 +152,15 @@ const Home = () => {
       </section>
       
       {/* Main Feature Course Content */}
+      {!isOnline && (
+        <div className="mb-4 p-4 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300 rounded-lg flex items-center">
+          <WifiOffIcon className="w-5 h-5 mr-2" /> 
+          <div>
+            <p className="font-medium">You are currently offline</p>
+            <p className="text-sm">You can access your downloaded courses below. Your progress will be saved and synced when you reconnect.</p>
+          </div>
+        </div>
+      )}
       <section className="mb-16">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-bold text-surface-900 dark:text-white">Featured Course</h2>

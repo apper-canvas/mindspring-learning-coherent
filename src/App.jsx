@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Routes, Route } from 'react-router-dom';
-import { ToastContainer } from 'react-toastify';
+import { ToastContainer, toast } from 'react-toastify';
 import { AnimatePresence } from 'framer-motion';
+import { useDispatch } from 'react-redux';
+import { checkNetworkStatus, syncOfflineProgress } from './store/offlineSlice';
 
 // Pages
 import Home from './pages/Home';
@@ -11,13 +13,48 @@ import NotFound from './pages/NotFound';
 import Header from './components/Header';
 import Footer from './components/Footer';
 
+// Register service worker
 function App() {
+  const dispatch = useDispatch();
   const [darkMode, setDarkMode] = useState(() => {
     // Check for saved theme preference or use system preference
     const savedTheme = localStorage.getItem('theme');
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     return savedTheme === 'dark' || (!savedTheme && prefersDark);
   });
+
+  // Handle online/offline status
+  useEffect(() => {
+    const handleOnline = () => {
+      dispatch(checkNetworkStatus(true));
+      toast.success('You are back online!');
+      
+      // Sync offline progress with server when connection is restored
+      dispatch(syncOfflineProgress());
+    };
+
+    const handleOffline = () => {
+      dispatch(checkNetworkStatus(false));
+      toast.info('You are offline. Your progress will be saved locally.');
+    };
+
+    // Check initial status
+    dispatch(checkNetworkStatus(navigator.onLine));
+    
+    // Set up event listeners for online/offline status changes
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    // Initial message if offline
+    if (!navigator.onLine) {
+      toast.info('You are offline. Your progress will be saved locally.');
+    }
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, [dispatch]);
 
   useEffect(() => {
     // Update class on document when darkMode changes

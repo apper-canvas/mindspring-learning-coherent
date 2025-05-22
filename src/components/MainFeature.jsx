@@ -1,7 +1,10 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { toast } from 'react-toastify';
+import { useDispatch, useSelector } from 'react-redux';
+import { saveCourseProgress } from '../utils/indexedDBUtils';
 import { getIcon } from '../utils/iconUtils';
+import DownloadManager from './DownloadManager';
 
 // Icons
 const PlayIcon = getIcon('play');
@@ -10,6 +13,8 @@ const CheckCircleIcon = getIcon('check-circle');
 const BarChart2Icon = getIcon('bar-chart-2');
 const TrophyIcon = getIcon('trophy');
 const ListChecksIcon = getIcon('list-checks');
+const DownloadIcon = getIcon('download');
+const WifiOffIcon = getIcon('wifi-off');
 const ArrowRightIcon = getIcon('arrow-right');
 
 // Sample course data
@@ -70,11 +75,14 @@ const quizQuestions = [
 ];
 
 const MainFeature = () => {
+  const dispatch = useDispatch();
+  const isOnline = useSelector(state => state.offline.isOnline);
   const [activeTab, setActiveTab] = useState('lessons');
-  const [lessons, setLessons] = useState(courseLessons);
+  const [lessons, setLessons] = useState(courseLessons.map(lesson => ({ ...lesson, isDownloaded: false })));
   const [currentLessonId, setCurrentLessonId] = useState(1);
   const [isPlaying, setIsPlaying] = useState(false);
   const [lessonProgress, setLessonProgress] = useState(0);
+  const [offlineMode, setOfflineMode] = useState(false);
   const [quizStarted, setQuizStarted] = useState(false);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
@@ -83,6 +91,26 @@ const MainFeature = () => {
     correctAnswers: 0,
     completed: false,
   });
+
+  // For demo purposes, create a course object that can be passed to DownloadManager
+  const [courseData] = useState({
+    id: 1,
+    title: "JavaScript Fundamentals",
+    description: "Learn the basics of JavaScript programming",
+    instructor: "Alex Johnson",
+    modules: courseLessons.map(lesson => ({
+      id: lesson.id,
+      title: lesson.title,
+      description: lesson.description,
+      duration: lesson.duration,
+      videoUrl: lesson.videoUrl
+    }))
+  });
+
+  // Check network status and use appropriate data source
+  useEffect(() => {
+    setOfflineMode(!isOnline);
+  }, [isOnline]);
 
   // Calculate overall course progress
   const overallProgress = Math.round((lessons.filter(lesson => lesson.isCompleted).length / lessons.length) * 100);
@@ -101,6 +129,13 @@ const MainFeature = () => {
             // Mark lesson as completed
             completeLessonHandler(currentLessonId);
             return 100;
+            
+            // Save progress to IndexedDB for offline access
+            const progress = {
+              id: `course-1-lesson-${currentLessonId}`,
+              lessonId: currentLessonId,
+              completed: true
+            };
           }
           return newProgress;
         });
@@ -133,6 +168,15 @@ const MainFeature = () => {
           : lesson
       )
     );
+    
+    // Save progress to IndexedDB for offline access
+    const progress = {
+      id: `course-1-lesson-${lessonId}`,
+      courseId: 1,
+      lessonId: lessonId,
+      completed: true
+    };
+    saveCourseProgress(progress);
     toast.success(`Lesson completed! Great job!`);
   };
 
@@ -242,6 +286,28 @@ const MainFeature = () => {
           Lessons
         </button>
         <button 
+          onClick={() => setActiveTab('downloads')} 
+          className={`flex items-center px-4 py-3 text-sm font-medium transition-colors ${
+            activeTab === 'downloads' 
+              ? 'text-primary border-b-2 border-primary' 
+              : 'text-surface-600 dark:text-surface-400 hover:text-primary dark:hover:text-primary'
+          }`}
+        >
+          <DownloadIcon className="w-4 h-4 mr-2" />
+          Downloads
+        </button>
+        <button 
+          onClick={() => setActiveTab('quiz')} 
+          className={`flex items-center px-4 py-3 text-sm font-medium transition-colors ${
+            activeTab === 'lessons' 
+              ? 'text-primary border-b-2 border-primary' 
+              : 'text-surface-600 dark:text-surface-400 hover:text-primary dark:hover:text-primary'
+          }`}
+        >
+          <ListChecksIcon className="w-4 h-4 mr-2" />
+          Lessons
+        </button>
+        <button 
           onClick={() => setActiveTab('quiz')} 
           className={`flex items-center px-4 py-3 text-sm font-medium transition-colors ${
             activeTab === 'quiz' 
@@ -267,6 +333,13 @@ const MainFeature = () => {
 
       {/* Content Area */}
       <div className="p-6">
+        {/* Offline Mode Indicator */}
+        {offlineMode && (
+          <div className="mb-4 p-3 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300 rounded-lg flex items-center">
+            <WifiOffIcon className="w-5 h-5 mr-2" /> You are in offline mode. Your progress will be saved locally and synced when you reconnect.
+          </div>
+        )}
+      
         {/* Lessons Tab */}
         {activeTab === 'lessons' && (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -283,6 +356,9 @@ const MainFeature = () => {
                       ? 'bg-primary/10 dark:bg-primary/20 border-l-4 border-primary'
                       : 'bg-surface-100 dark:bg-surface-700 hover:bg-surface-200 dark:hover:bg-surface-600'
                   }`}
+                  aria-label={`Select lesson: ${lesson.title}`}
+                  title={lesson.title}
+                  disabled={offlineMode && !lesson.isDownloaded}
                 >
                   <div className="mr-3">
                     {lesson.isCompleted ? (
@@ -296,9 +372,17 @@ const MainFeature = () => {
                   <div>
                     <h4 className="font-medium text-sm text-surface-800 dark:text-surface-200">{lesson.title}</h4>
                     <p className="text-xs text-surface-600 dark:text-surface-400">{lesson.duration}</p>
+                    {lesson.isDownloaded && (
+                      <span className="text-xs text-green-600 dark:text-green-400">Available offline</span>
+                    )}
                   </div>
                 </button>
               ))}
+              
+              {/* Download All Lessons */}
+              <div className="mt-4">
+                <DownloadManager course={courseData} size="md" />
+              </div>
             </div>
 
             {/* Video Player */}
@@ -349,6 +433,15 @@ const MainFeature = () => {
                       {isPlaying ? 'Pause' : 'Play'}
                     </button>
                     
+                    {/* Individual lesson download button */}
+                    <div className="ml-2">
+                      <DownloadManager 
+                        course={courseData} 
+                        moduleId={currentLessonId} 
+                        size="sm" 
+                      />
+                    </div>
+                    
                     {currentLesson.isCompleted && (
                       <span className="flex items-center text-green-500 text-sm">
                         <CheckCircleIcon className="w-4 h-4 mr-1" />
@@ -361,6 +454,62 @@ const MainFeature = () => {
                     {lessonProgress > 0 ? `${lessonProgress}% complete` : currentLesson.duration}
                   </div>
                 </div>
+              </div>
+            </div>
+          </div>
+        )}
+        
+        {/* Downloads Tab */}
+        {activeTab === 'downloads' && (
+          <div className="space-y-6">
+            <div className="bg-surface-50 dark:bg-surface-700 rounded-xl p-6">
+              <h3 className="text-lg font-semibold mb-4">Manage Offline Content</h3>
+              
+              <div className="mb-6">
+                <p className="text-surface-600 dark:text-surface-400 mb-4">
+                  Download courses and modules to access them when you're offline. Your progress will be synchronized when you reconnect.
+                </p>
+                
+                {/* Download full course */}
+                <div className="bg-white dark:bg-surface-800 p-4 rounded-lg mb-4 border border-surface-200 dark:border-surface-700">
+                  <div className="flex justify-between items-center mb-2">
+                    <h4 className="font-medium">Full Course</h4>
+                    <DownloadManager course={courseData} size="md" />
+                  </div>
+                  <p className="text-sm text-surface-500 dark:text-surface-400">Download the entire course with all lessons and resources</p>
+                </div>
+                
+                {/* Individual modules download */}
+                <h4 className="font-medium mb-3 mt-6">Individual Modules</h4>
+                <div className="space-y-3">
+                  {courseData.modules.map(module => (
+                    <div 
+                      key={module.id}
+                      className="bg-white dark:bg-surface-800 p-4 rounded-lg border border-surface-200 dark:border-surface-700"
+                    >
+                      <div className="flex justify-between items-center">
+                        <div>
+                          <h5 className="font-medium text-sm">{module.title}</h5>
+                          <p className="text-xs text-surface-500 dark:text-surface-400">{module.duration}</p>
+                        </div>
+                        <DownloadManager 
+                          course={courseData}
+                          moduleId={module.id}
+                          size="sm"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              
+              {/* Storage management */}
+              <div className="bg-surface-100 dark:bg-surface-600 p-4 rounded-lg">
+                <h4 className="font-medium mb-2">Storage Usage</h4>
+                <div className="w-full bg-surface-200 dark:bg-surface-700 h-2 rounded-full">
+                  <div className="bg-primary h-2 rounded-full" style={{ width: '35%' }}></div>
+                </div>
+                <p className="text-sm mt-2 text-surface-600 dark:text-surface-300">87.5 MB used of 250 MB allocated for offline content</p>
               </div>
             </div>
           </div>
