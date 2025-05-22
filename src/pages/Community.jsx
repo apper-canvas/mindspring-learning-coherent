@@ -7,6 +7,7 @@ import { format } from 'date-fns';
 
 import { getIcon } from '../utils/iconUtils';
 import CommunityPost from '../components/CommunityPost';
+import { TypeInfo } from '../utils/typeUtils';
 import {
   getPosts,
   createPost,
