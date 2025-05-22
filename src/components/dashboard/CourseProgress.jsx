@@ -82,7 +82,7 @@ const CourseProgress = ({ courses, loading }) => {
               </button>
               <Link to={`/dashboard?tab=progress&course=${course.id}`} className="btn-ghost text-sm py-1.5 px-3 flex items-center" title="View detailed progress">
                 <BarChartIcon className="w-4 h-4 mr-1.5 sm:mr-0" /> <span className="hidden sm:inline">Progress</span>
-              </button>
+              </Link>
             </div>
             
             <div className="p-4">
@@ -98,12 +98,12 @@ const CourseProgress = ({ courses, loading }) => {
               </div>
               <div className="w-full bg-surface-200 dark:bg-surface-600 rounded-full h-2.5">
                 <motion.div 
-                  initial={{ width: 0 }}
-                  animate={{ width: `${course.progress}%` }}
-                  transition={{ duration: 0.5, ease: "easeOut" }}
-                  className="bg-primary h-2.5 rounded-full"
-                  style={{ width: `${course.progress}%` }}>
-                <div className="bg-primary h-2.5 rounded-full" style={{ width: `${course.progress}%` }}></div>
+                initial={{ width: 0 }}
+                animate={{ width: `${course.progress}%` }}
+                transition={{ duration: 0.5, ease: "easeOut" }}
+                className="bg-primary h-2.5 rounded-full"
+                style={{ width: `${course.progress}%` }}
+                >
               </div>
             </div>
           </motion.div>
