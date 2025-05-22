@@ -1,51 +1,54 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { BADGE_TYPES, BADGE_LEVELS, BADGE_CATEGORIES, createBadge } from '../utils/badgeUtils';
-import { createBadgeInstance, checkBadgeEligibility, BADGE_TYPES } from '../utils/badgeUtils';
+import { BADGE_TYPES, BADGE_CATEGORIES, createBadge, createBadgeInstance, checkBadgeEligibility } from '../utils/badgeUtils';
 import { toast } from 'react-toastify';
-import { getUserBadges, awardBadgeToUser } from '../services/badgeService';
+import { getUserBadges, awardBadgeToUser, updateBadge } from '../services/badgeService';
 
-// Fetch all badges from IndexedDB
-export const fetchBadges = createAsyncThunk(
-  'badges/fetchBadges',
-  async () => {
+// Fetch user badges from backend
 export const fetchUserBadges = createAsyncThunk(
-    return badges;
-  }
-);
-
-// Check and award badge if eligible
+  'badges/fetchUserBadges',
+  async (_, { getState }) => {
       const state = getState();
       const user = state.user.user;
       
       if (!user || !user.userId) {
-        return mockBadges;
+        return [];
       }
       
       const badges = await getUserBadges(user.userId);
       return badges;
+  }
+);
+
+// Check and award badge if eligible
+export const checkAndAwardBadge = createAsyncThunk(
   'badges/checkAndAwardBadge',
-  async ({ badgeType, userState, courseId, courseTitle }, { getState, dispatch }) => {
+  async ({ badgeTypeKey, courseId, courseTitle }, { getState, dispatch }) => {
     // Get current badges
     const state = getState();
     const existingBadges = state.badges.badges;
+    const userState = state.user.user;
     
+    if (!BADGE_TYPES[badgeTypeKey]) {
+        return { success: false, message: 'Invalid badge type' };
+    }
+
     // Check if already has this badge for this course
     const hasBadge = existingBadges.some(
-      badge => badge.badgeTypeId === BADGE_TYPES[badgeType].id && badge.courseId === courseId
+      badge => badge.badgeTypeId === BADGE_TYPES[badgeTypeKey].id && badge.courseId === courseId
     );
     
     // If already has badge or not eligible, return null
-    if (hasBadge || !checkBadgeEligibility(BADGE_TYPES[badgeType].id, userState)) {
-        return { success: false, message: 'Invalid badge type' };
+    if (hasBadge || !checkBadgeEligibility(BADGE_TYPES[badgeTypeKey].id, userState)) {
+        return { success: false, message: 'Not eligible for badge' };
     }
     
     // Create and save badge
-    const badgeInstance = createBadgeInstance(badgeType, courseId, courseTitle);
+    const badgeInstance = createBadgeInstance(badgeTypeKey, courseId, courseTitle);
     if (badgeInstance) {
-      await saveBadge(badgeInstance);
+      const result = await awardBadgeToUser(state.user.user?.userId, badgeInstance);
       
       // Show toast notification
-      toast.success(`🏆 New badge earned: ${badgeInstance.name}!`, {
+      toast.success(`🏆 New badge earned: ${result.name || 'Badge'}!`, {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -54,34 +57,33 @@ export const fetchUserBadges = createAsyncThunk(
         draggable: true,
       });
       
-      return badgeInstance;
+      return result;
     }
-          const badge = createBadge(BADGE_TYPES.FIRST_STEP, 'bronze', BADGE_CATEGORIES.ENGAGEMENT, courseTitle);
-          return await awardBadgeToUser(getState().user.user?.userId, badge.id, courseId, courseTitle);
+    return { success: false, message: 'Failed to create badge' };
   }
 );
 
 // Mark badge as viewed (no longer new)
 export const markBadgeAsViewed = createAsyncThunk(
   'badges/markBadgeAsViewed',
-          const badge = createBadge(BADGE_TYPES.FIRST_LESSON, 'bronze', BADGE_CATEGORIES.COMPLETION, courseTitle);
-          return await awardBadgeToUser(getState().user.user?.userId, badge.id, courseId, courseTitle);
-    const badge = await getBadge(badgeId);
-    if (badge) {
-      const updatedBadge = { ...badge, isNew: false };
-      await saveBadge(updatedBadge);
-      return badgeId;
+  async (badgeId, { getState }) => {
+    try {
+      const userId = getState().user.user?.userId;
+      if (!userId) return null;
+      
+      const result = await updateBadge(userId, badgeId, { isNew: false });
+      return result.success ? badgeId : null;
+    } catch (error) {
+      console.error('Error marking badge as viewed:', error);
+      return null;
     }
-          const badge = createBadge(BADGE_TYPES.OFFLINE_WARRIOR, 'silver', BADGE_CATEGORIES.SPECIAL, courseTitle);
-          return await awardBadgeToUser(getState().user.user?.userId, badge.id, courseId, courseTitle);
   }
 );
 
 const badgeSlice = createSlice({
   name: 'badges',
   initialState: {
-          const badge = createBadge(BADGE_TYPES.HALFWAY, 'silver', BADGE_CATEGORIES.ACHIEVEMENT, courseTitle);
-          return await awardBadgeToUser(getState().user.user?.userId, badge.id, courseId, courseTitle);
+    badges: [],
     isLoading: false,
     error: null
   },
@@ -113,8 +115,30 @@ export default badgeSlice.reducer;
       .addCase(fetchUserBadges.pending, (state) => {
       .addCase(fetchUserBadges.fulfilled, (state, action) => {
       .addCase(fetchUserBadges.rejected, (state, action) => {
-        if (action.payload && action.payload.success) {
-          // Fetch updated badges
+      .addCase(fetchUserBadges.pending, (state) => {
           dispatch(fetchUserBadges());
+        state.error = null;
           toast.success(`🏆 Badge Earned!`, {
-export const { addBadge, fetchBadges } = badgeSlice.actions;
+      .addCase(fetchUserBadges.fulfilled, (state, action) => {
+        state.error = null;
+      })
+      .addCase(fetchUserBadges.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.error.message;
+      })
+      .addCase(checkAndAwardBadge.pending, (state) => {
+        // Optional: Could set a specific loading state for badge awarding
+      })
+      .addCase(checkAndAwardBadge.rejected, (state, action) => {
+        // Handle errors if needed
+        state.error = action.error.message;
+      .addCase(checkAndAwardBadge.fulfilled, (state, action) => {
+        if (action.payload && action.payload.success !== false) {
+          state.badges.push(action.payload);
+        }
+      .addCase(markBadgeAsViewed.fulfilled, (state, action) => {
+        if (action.payload) {
+          const badgeIndex = state.badges.findIndex(badge => badge.id === action.payload);
+          if (badgeIndex !== -1) {
+            state.badges[badgeIndex].isNew = false;
+          }
