@@ -21,7 +21,6 @@ import {
 // Icons
 const UsersIcon = getIcon('users');
 const PlusIcon = getIcon('plus');
-const TrendingUpIcon = getIcon('trending-up');
 const UsersIcon = getIcon('users');
 const BellIcon = getIcon('bell');
 const TagIcon = getIcon('tag');
@@ -159,7 +158,7 @@ const Community = () => {
   const handleCreatePost = async () => {
     if (!isAuthenticated) {
       toast.error("You need to be logged in to create a post");
-      navigate(`/login?redirect=${window.location.pathname}`);
+      navigate(`/login?redirect=${encodeURIComponent(window.location.pathname)}`);
       return;
     }
     
@@ -186,7 +185,7 @@ const Community = () => {
       setNewPostData({ title: '', content: '', category: 'questions' });
       
       // Refresh posts
-      const refreshedPosts = await getPosts({ category: activeTab !== 'all' ? activeTab : undefined });
+      const refreshedPosts = await getPosts({ category: activeCategory !== 'all' ? activeCategory : undefined });
       setPosts(refreshedPosts);
     } catch (err) {
       console.error("Error creating post:", err);
@@ -194,49 +193,11 @@ const Community = () => {
     }
   };
 
-  const handlePostAction = (postId, action) => {
-    setPosts(prevPosts => 
-      prevPosts.map(post => {
-      setNewPostData({ 
-        title: '', 
-        content: '', 
-        category: 'questions' 
-      });
-          switch (action) {
-            case 'like':
-      const filters = {};
-      if (activeCategory !== 'all') {
-        filters.category = activeCategory;
-      }
-      if (searchQuery) {
-        filters.searchTerm = searchQuery;
-      }
-      
-      const refreshedPosts = await getPosts(filters);
-      
-      // Process posts with placeholder user data
-      const postsWithDetails = refreshedPosts.map(post => ({
-        ...post,
-        comments: [],
-        isLiked: false,
-        isBookmarked: false,
-        authorName: `User ${post.userId?.substring(0, 4)}`
-      }));
-      
-      setPosts(postsWithDetails);
-              toast.success(isLiked ? 'Post liked!' : 'Post unliked');
-              return { ...post, isLiked, likes: likesCount };
-            case 'share':
-    } finally {
-      setCreatingPost(false);
-              toast.info('Post shared!');
-              return { ...post, shares: post.shares + 1 };
-            default:
   // Handle post actions (like, share, bookmark)
   const handlePostAction = async (postId, action) => {
     if (!isAuthenticated) {
       toast.error("You need to be logged in to perform this action");
-      navigate(`/login?redirect=${window.location.pathname}`);
+      navigate(`/login?redirect=${encodeURIComponent(window.location.pathname)}`);
       return;
     }
     
@@ -292,9 +253,6 @@ const Community = () => {
       console.error(`Error handling post action (${action}):`, error);
       toast.error(`Could not ${action} the post`);
     }
-              avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=80&q=80',
-            },
-        </div>
   // Handle adding a comment to a post
   const handleAddComment = async (postId, commentContent) => {
     if (!isAuthenticated) {
@@ -384,6 +342,18 @@ const Community = () => {
             isBookmarked: false,
             authorName: `User ${post.userId?.substring(0, 4)}`
           };
+      );
+      
+      setPosts(postsWithDetails);
+    } catch (error) {
+      console.error("Error refreshing posts:", error);
+      setError("Failed to reload discussions");
+      toast.error("Could not refresh discussions");
+    } finally {
+      setLoadingPosts(false);
+    }
+  };
+  
         {/* Main content layout - 2 columns on larger screens */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Left column - Discussions */}
@@ -451,7 +421,7 @@ const Community = () => {
                   setIsCreateModalOpen(true);
                 } else {
                   toast.info("Please sign in to create a discussion");
-                  navigate(`/login?redirect=${window.location.pathname}`);
+                  navigate(`/login?redirect=${encodeURIComponent(window.location.pathname)}`);
                 }
               }} 
               className="w-full py-3 border border-dashed border-surface-300 dark:border-surface-600 rounded-lg text-surface-500 hover:text-primary hover:border-primary transition-colors flex items-center justify-center gap-2"
@@ -523,7 +493,6 @@ const Community = () => {
               )}
             </div>          
           </div>
-
         {/* Right column - Trending topics */}
         <div className="bg-white dark:bg-surface-800 rounded-xl p-5 shadow-sm border border-surface-200 dark:border-surface-700">
           <h2 className="font-medium text-lg mb-4 flex items-center">
@@ -706,81 +675,3 @@ export default Community;
 
 /* Remove unused variables */
 const BellIcon = getIcon('bell');
-
-/* Categories data was extracted to a constant at the top of the file */
-
-            </button>
-        </div>
-      </div>
-        {/* Create Post Modal - Moved outside the grid layout */}
-        {isCreateModalOpen && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="bg-white dark:bg-surface-800 rounded-xl w-full max-w-lg p-6"
-            >
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-bold">Create New Post</h2>
-                <button onClick={() => setIsCreateModalOpen(false)} className="text-surface-500">
-                  <XIcon className="w-5 h-5" />
-                </button>
-              </div>
-              
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium mb-1">Title</label>
-                  <input 
-                    type="text" 
-                    className="input w-full" 
-                    placeholder="Add a title for your post"
-                    value={newPostData.title}
-                    onChange={(e) => setNewPostData({...newPostData, title: e.target.value})}
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium mb-1">Content</label>
-                  <textarea 
-                    className="input w-full min-h-[100px]" 
-                    placeholder="Share your thoughts..."
-                    value={newPostData.content}
-                    onChange={(e) => setNewPostData({...newPostData, content: e.target.value})}
-                  ></textarea>
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium mb-1">Category</label>
-                  <select 
-                    className="input w-full"
-                    value={newPostData.category}
-                    onChange={(e) => setNewPostData({...newPostData, category: e.target.value})}
-                  >
-                    {categories.map(category => (
-                      <option key={category.id} value={category.id}>{category.name}</option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-              
-              <div className="flex justify-end mt-6 space-x-2">
-                <button 
-                  onClick={() => setIsCreateModalOpen(false)}
-                  className="btn-ghost"
-                >
-                  Cancel
-                </button>
-                <button 
-                  onClick={handleCreatePost}
-                  className="px-4 py-2 bg-primary hover:bg-primary-dark text-white rounded-lg"
-                >Post</button>
-              </div>
-            </motion.div>
-          </div>
-      )}
-      </div> {/* End of container */}
-    </> {/* End of fragment */}
-  );
-};
-
-export default Community;
