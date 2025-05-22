@@ -8,6 +8,7 @@ const ChevronRightIcon = getIcon('chevron-right');
 const ExploreCard = ({ category }) => {
   const { id, title, description, icon, color, count, path } = category;
   
+  const navigate = useNavigate();
   const Icon = getIcon(icon);
   
   // Helper function to get the appropriate color classes
@@ -23,7 +24,6 @@ const ExploreCard = ({ category }) => {
       },
       accent: {
         border: 'border-t-accent hover:border-t-accent-dark',
-  const navigate = useNavigate();
         bg: 'bg-accent/10 text-accent'
       }
     };
@@ -43,11 +43,9 @@ const ExploreCard = ({ category }) => {
     animate: { opacity: 1, y: 0, transition: { duration: 0.3 } },
     hover: { 
       y: -5, 
-        cursor-pointer
-        hover:shadow-lg transition-shadow duration-300
       boxShadow: '0 10px 20px rgba(0,0,0,0.1)',
       transition: { duration: 0.2 }
-      onClick={handleCardClick}
+    }
   };
 
   // Icon animations
@@ -66,6 +64,7 @@ const ExploreCard = ({ category }) => {
       initial="initial"
       animate="animate"
       whileHover="hover"
+      onClick={handleCardClick}
       variants={cardVariants}
     >
       <Link to={path || `/category/${id}`} className="block h-full">
