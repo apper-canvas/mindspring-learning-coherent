@@ -97,6 +97,7 @@ const mockEnrolledCourses = [
         duration: '45 minutes',
         completed: true
       }
+    ],
     lastAccessed: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
     nextLesson: {
       title: "Reading Sheet Music",
