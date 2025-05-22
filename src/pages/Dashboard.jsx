@@ -28,6 +28,7 @@ const Dashboard = () => {
   const navigate = useNavigate();
   
   const oldState = useSelector(state => state.dashboard);
+  const {
     enrolledCourses, 
     streakData, 
     achievements,
@@ -100,12 +101,7 @@ const Dashboard = () => {
   const userName = userProfile?.fullName?.split(' ')[0] || 
                    user?.firstName || 
                    "Student";
-  // Update URL when tab changes
-  const setActiveTabWithNavigation = (tab, courseId = null) => {
-    setActiveTab(tab);
-  // Get user's first name for greeting (would come from auth in a real app)
-  const userName = "User";
-  
+
   // Get appropriate greeting based on time of day
   const getGreeting = () => {
     const hour = new Date().getHours();
@@ -113,6 +109,11 @@ const Dashboard = () => {
     if (hour < 18) return 'Good afternoon';
     return 'Good evening';
   };
+  
+  // Update URL when tab changes
+  const setActiveTabWithNavigation = (tab, courseId = null) => {
+    setActiveTab(tab);
+    
     // Refresh data
     setLoadingCourses(true);
     setLoadingProfile(true);
@@ -120,24 +121,26 @@ const Dashboard = () => {
     // Re-fetch data
     getUserEnrolledCourses(user.userId).then(setUserEnrolledCourses).finally(() => setLoadingCourses(false));
     getUserProfile().then(setUserProfile).finally(() => setLoadingProfile(false));
+  };
+  
   const refreshDashboard = () => {
     toast.info('Refreshing dashboard data...');
     dispatch(fetchDashboardData());
-  if (dashboardError) {
+  };
   
   // Show error state if data loading failed
-  if (error) {
+  if (dashboardError || error) {
     return (
-          <p className="text-red-700 dark:text-red-300 mb-4">{dashboardError}</p>
+      <div className="container mx-auto px-4 py-8">
         <div className="p-6 bg-red-50 dark:bg-red-900/20 rounded-xl border border-red-200 dark:border-red-800 text-center">
           <h2 className="text-xl font-bold mb-2 text-red-800 dark:text-red-400">Failed to load dashboard</h2>
-          <p className="text-red-700 dark:text-red-300 mb-4">{error}</p>
+          <p className="text-red-700 dark:text-red-300 mb-4">{dashboardError || error}</p>
           <button onClick={refreshDashboard} className="btn-primary">Try Again</button>
         </div>
       </div>
     );
   }
-  
+
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="flex flex-wrap items-center justify-between mb-8">
