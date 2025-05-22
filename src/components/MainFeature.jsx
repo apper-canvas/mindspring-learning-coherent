@@ -111,7 +111,7 @@ const MainFeature = () => {
       duration: lesson.duration,
       videoUrl: lesson.videoUrl
     })),
-  });
+  };
 
   // Check network status and use appropriate data source
   useEffect(() => {
@@ -866,6 +866,7 @@ const MainFeature = () => {
                   Complete lessons and quizzes to earn badges and track your progress!
                 </p>
               )}
+            </div>
           </div>
         </div>
       </div>
