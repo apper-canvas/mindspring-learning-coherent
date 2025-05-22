@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useSearchParams } from 'react-router-dom';
+import { motion, AnimatePresence, useAnimation } from 'framer-motion';
 import { getCourses, deleteCourse } from '../services/courseService.js';
 import { useContext } from 'react';
 import { toast } from 'react-toastify';
@@ -15,9 +16,8 @@ const FilterIcon = getIcon('filter');
 const SlidersIcon = getIcon('sliders');
 const PlusIcon = getIcon('plus');
 const BookOpenIcon = getIcon('book-open');
+const TrashIcon = getIcon('trash');
 const AlertIcon = getIcon('alert-triangle');
-
-import { getCourses, deleteCourse } from '../services/courseService';
 import { AuthContext } from '../App';
 
 const Courses = () => {
