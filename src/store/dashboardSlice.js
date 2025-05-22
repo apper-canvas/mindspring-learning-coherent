@@ -80,24 +80,75 @@ const generateMockStreakData = () => {
 const mockAchievements = [
   {
     id: 1,
-    title: "JavaScript Basics",
-    description: "Completed the JavaScript fundamentals module",
-    dateEarned: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString(),
-    icon: "code"
+    type: "achievement",
+    title: "JavaScript Fundamentals",
+    description: "Completed the JavaScript Fundamentals course with 90% score",
+    dateEarned: new Date(Date.now() - 45 * 24 * 60 * 60 * 1000).toISOString(),
+    icon: "code",
+    category: "course"
   },
   {
     id: 2,
-    title: "7-Day Streak",
-    description: "Learned for 7 consecutive days",
-    dateEarned: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(),
-    icon: "flame"
+    type: "certification",
+    title: "JavaScript Developer Certificate",
+    description: "Professional certification for JavaScript development skills",
+    dateEarned: new Date(Date.now() - 40 * 24 * 60 * 60 * 1000).toISOString(),
+    icon: "award",
+    category: "certification",
+    issuer: "MindSpring Academy",
+    certificateURL: "https://example.com/cert/js-dev",
+    credentialID: "MSJS-2023-78954"
   },
   {
     id: 3,
-    title: "Conversation Ready",
-    description: "Completed basic Spanish conversation skills",
+    title: "7-Day Streak",
+    type: "achievement",
+    description: "Learned for 7 consecutive days",
+    dateEarned: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
+    icon: "flame",
+    category: "streak"
+  },
+  {
+    id: 4,
+    type: "achievement",
+    title: "Spanish Beginner Level",
+    description: "Completed the Spanish beginner course modules",
+    dateEarned: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000).toISOString(),
+    icon: "message-circle",
+    category: "course"
+  },
+  {
+    id: 5,
+    type: "certification",
+    title: "Spanish A1 Certificate",
+    description: "Certified Spanish language proficiency at A1 level",
+    dateEarned: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString(),
+    icon: "file-text",
+    category: "certificate",
+    issuer: "MindSpring Language Institute",
+    certificateURL: "https://example.com/cert/spanish-a1",
+    credentialID: "MSL-SP-A1-2023-12345"
+  },
+  {
+    id: 6,
+    type: "certification",
+    title: "Front-End Web Development",
+    description: "Comprehensive certification in modern front-end development techniques",
+    dateEarned: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(),
+    icon: "layout",
+    category: "specialization",
+    issuer: "MindSpring Tech Academy",
+    certificateURL: "https://example.com/cert/frontend-dev",
+    credentialID: "MSWD-FE-2023-56789"
+  },
+  {
+    id: 7,
+    type: "achievement",
+    title: "30-Day Streak",
+    description: "Maintained a learning streak for 30 consecutive days",
     dateEarned: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
-    icon: "message-circle"
+    icon: "zap",
+    category: "streak"
   }
 ];
 

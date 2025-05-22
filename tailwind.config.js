@@ -15,11 +15,12 @@ export default {
         secondary: {
           DEFAULT: '#10b981',
           light: '#34d399',
+          dark: '#059669'
+        },
         'badge-bronze': '#CD7F32',
         'badge-silver': '#C0C0C0',
         'badge-gold': '#FFD700',
         'badge-platinum': '#E5E4E2',
-          dark: '#059669'
         },
         accent: '#f97316',
         badge: {
@@ -28,7 +29,11 @@ export default {
           gold: '#FFD700',
           beginner: '#83c5be',
           intermediate: '#6b73c1',
-          advanced: '#e76f51',
+          advanced: '#e76f51', 
+          certificate: '#0ea5e9',
+          certification: '#8b5cf6',
+          course: '#f59e0b',
+          specialization: '#ec4899',
           master: '#7209b7'
         },
         leaderboard: {

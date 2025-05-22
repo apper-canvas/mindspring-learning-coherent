@@ -137,6 +137,22 @@
     @apply badge-achievement from-badge-intermediate to-badge-intermediate/80;
   }
   
+  .badge-advanced {
+    @apply badge-achievement from-badge-advanced to-badge-advanced/80;
+  }
+  
+  .badge-certificate {
+    @apply badge-achievement from-badge-certificate to-badge-certificate/80;
+  }
+  
+  .badge-certification {
+    @apply badge-achievement from-badge-certification to-badge-certification/80;
+  }
+  
+  .badge-specialization {
+    @apply badge-achievement from-badge-specialization to-badge-specialization/80;
+  }
+  
   /* Leaderboard Styles */
   .leaderboard-table {
     @apply w-full border-collapse;
