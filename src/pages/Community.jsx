@@ -21,9 +21,9 @@ import {
 // Icons
 const UsersIcon = getIcon('users');
 const PlusIcon = getIcon('plus');
-const UsersIcon = getIcon('users');
 const BellIcon = getIcon('bell');
 const TagIcon = getIcon('tag');
+const TrendingUpIcon = getIcon('trending-up');
 const SearchIcon = getIcon('search');
 const XIcon = getIcon('x');
 const FilterIcon = getIcon('filter');
@@ -253,6 +253,7 @@ const Community = () => {
       console.error(`Error handling post action (${action}):`, error);
       toast.error(`Could not ${action} the post`);
     }
+  };
   // Handle adding a comment to a post
   const handleAddComment = async (postId, commentContent) => {
     if (!isAuthenticated) {
@@ -342,6 +343,7 @@ const Community = () => {
             isBookmarked: false,
             authorName: `User ${post.userId?.substring(0, 4)}`
           };
+        })
       );
       
       setPosts(postsWithDetails);
@@ -672,6 +674,3 @@ const Community = () => {
 };
 
 export default Community;
-
-/* Remove unused variables */
-const BellIcon = getIcon('bell');
