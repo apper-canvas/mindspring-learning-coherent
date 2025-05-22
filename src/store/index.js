@@ -8,7 +8,7 @@ const store = configureStore({
   reducer: {
     offline: offlineReducer,
     badges: badgeReducer,
-    leaderboards: leaderboardReducer
+    leaderboards: leaderboardReducer,
     dashboard: dashboardReducer,
   },
   middleware: (getDefaultMiddleware) => getDefaultMiddleware({serializableCheck: false})
