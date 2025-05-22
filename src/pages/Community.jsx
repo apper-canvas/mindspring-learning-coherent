@@ -358,7 +358,7 @@ const Community = () => {
   
   return (
     <>
-        {/* Main content layout - 2 columns on larger screens */}
+      <div className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Left column - Discussions */}
           <div className="lg:col-span-2 space-y-6">
@@ -498,7 +498,8 @@ const Community = () => {
             </div>          
           </div>
           {/* Right column - Trending topics */}
-          <div className="bg-white dark:bg-surface-800 rounded-xl p-5 shadow-sm border border-surface-200 dark:border-surface-700">
+          <div className="space-y-6">
+            <div className="bg-white dark:bg-surface-800 rounded-xl p-5 shadow-sm border border-surface-200 dark:border-surface-700">
           <h2 className="font-medium text-lg mb-4 flex items-center">
             <TrendingUpIcon className="w-5 h-5 mr-2 text-primary" />
             Trending Topics
@@ -578,7 +579,7 @@ const Community = () => {
             </ul>
           </div>
         </div>
-      </div>
+        </div>
       
       {/* Create Post Modal */}
       {isCreateModalOpen && (
@@ -670,7 +671,7 @@ const Community = () => {
           </motion.div>
         </div>
       )}
-        </div>
+      </div>
   </>
   );
 };
