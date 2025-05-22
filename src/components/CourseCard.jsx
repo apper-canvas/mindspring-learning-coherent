@@ -8,22 +8,20 @@ import { useSelector, useDispatch } from 'react-redux';
 import { getIcon } from '../utils/iconUtils';
 
 // Services
-const TrashIcon = getIcon('trash');
 import { enrollUserInCourse } from '../services/userCourseService';
-const CourseCard = ({ course, onDeleteClick }) => {
-  const { isAuthenticated } = useContext(AuthContext);
-  
+
 // Icons
+const TrashIcon = getIcon('trash');
 const UserIcon = getIcon('user');
 const ClockIcon = getIcon('clock');
 const BookOpenIcon = getIcon('book-open');
-        return 'bg-green-100 text-green-800 dark:bg-green-900/60 dark:text-green-200';
 const StarIcon = getIcon('star');
-        return 'bg-blue-100 text-blue-800 dark:bg-blue-900/60 dark:text-blue-200';
 const DownloadIcon = getIcon('download');
-        return 'bg-orange-100 text-orange-800 dark:bg-orange-900/60 dark:text-orange-200';
-const CourseCard = ({ course }) => {
-        return 'bg-gray-100 text-gray-800 dark:bg-gray-900/60 dark:text-gray-200';
+const UsersIcon = getIcon('users');
+const FileIcon = getIcon('file');
+
+const CourseCard = ({ course, onDeleteClick }) => {
+  const [isEnrolling, setIsEnrolling] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -52,17 +50,6 @@ const CourseCard = ({ course }) => {
       case 'advanced':
         return 'Advanced';
       default:
-              
-              {isAuthenticated && (
-                <button 
-                  onClick={(e) => {
-                    e.preventDefault();
-                    onDeleteClick(course);
-                  }}
-                  className="ml-auto text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 transition-colors p-1"
-                  aria-label="Delete course"
-                ><TrashIcon className="w-4 h-4" /></button>
-              )}
         return 'All Levels';
     }
   };
@@ -156,7 +143,19 @@ const CourseCard = ({ course }) => {
           </div>
         </div>
         
-        {/* Course Actions */}
+        {/* Delete button if onDeleteClick is provided */}
+        {onDeleteClick && isAuthenticated && (
+          <div className="absolute top-2 right-2">
+            <button 
+              onClick={(e) => {
+                e.preventDefault();
+                onDeleteClick(course);
+              }}
+              className="bg-surface-800/60 rounded-full p-1.5 text-white hover:bg-surface-900 transition-colors"
+              aria-label="Delete course"
+            ><TrashIcon className="w-4 h-4" /></button>
+          </div>
+        )}
         <div className="px-5 pb-5 pt-2 border-t border-surface-200 dark:border-surface-700 flex justify-between">
           <button 
             onClick={handleEnroll} 
