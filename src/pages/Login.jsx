@@ -43,6 +43,7 @@ function Login() {
               className="text-sm text-surface-600 dark:text-surface-400 hover:text-primary">
               Return to home page
           </Link>
+          </div>
         </div>
       </div>
     </div>
