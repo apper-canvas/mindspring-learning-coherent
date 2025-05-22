@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { getOfflineCourses, saveOfflineCourse, saveCourseProgress, 
-         deleteOfflineCourse, getOfflineCoursesProgress } from '../utils/indexedDBUtils';
+import { getOfflineCourses, saveOfflineCourse, saveCourseProgress,
+         deleteOfflineCourse, getOfflineCoursesProgress, saveCompleteCourseData } from '../utils/indexedDBUtils';
 
 export const fetchOfflineCourses = createAsyncThunk(
   'offline/fetchOfflineCourses',

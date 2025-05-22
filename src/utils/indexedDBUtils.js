@@ -137,7 +137,7 @@ export const getAllDetailedProgress = async () => {
 };
 
 // Save complete course data with progress information
-export const saveCourseProgress = async (course) => {
+export const saveCompleteCourseData = async (course) => {
   try {
     const db = await initDB();
     
