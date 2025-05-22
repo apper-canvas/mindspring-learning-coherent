@@ -670,7 +670,7 @@ const Community = () => {
           </motion.div>
         </div>
       )}
-    </div>
+        </div>
   </>
   );
 };
