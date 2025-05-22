@@ -110,7 +110,7 @@ const MainFeature = () => {
       description: lesson.description,
       duration: lesson.duration,
       videoUrl: lesson.videoUrl
-    }));
+    })),
   };
 
   // Check network status and use appropriate data source
