@@ -1,114 +1,30 @@
  import { v4 as uuidv4 } from 'uuid';
- 
-import { v4 as uuidv4 } from 'uuid';
  import { getIcon } from './iconUtils';
  
- // Badge Types & Levels
-   COURSE_STARTER: {
-     id: 'course_starter',
- 
-// Helper functions to create badge objects
-export const createBadge = (badgeType, level, category, courseTitle) => {
-  switch (badgeType) {
-    case BADGE_TYPES.FIRST_STEP:
-      return createFirstStepBadge(courseTitle);
-    case BADGE_TYPES.FIRST_LESSON:
-      return createFirstLessonBadge(courseTitle);
-    case BADGE_TYPES.OFFLINE_WARRIOR:
-      return createOfflineWarriorBadge(courseTitle);
-    case BADGE_TYPES.HALFWAY:
-      return createHalfwayBadge(courseTitle);
-    case BADGE_TYPES.COURSE_COMPLETE:
-      return createCourseCompleteBadge(courseTitle);
-    case BADGE_TYPES.QUIZ_MASTER:
-      return createQuizMasterBadge(courseTitle);
-    default:
-      return createDefaultBadge(level, category, courseTitle);
-  }
+// Badge Types & Levels
+export const BADGE_TYPES = {
+  FIRST_STEP: 'FIRST_STEP',
+  FIRST_LESSON: 'FIRST_LESSON',
+  OFFLINE_WARRIOR: 'OFFLINE_WARRIOR',
+  HALFWAY: 'HALFWAY',
+  COURSE_COMPLETE: 'COURSE_COMPLETE',
+  QUIZ_MASTER: 'QUIZ_MASTER',
+  COURSE_STARTER: 'COURSE_STARTER'
 };
 
-// Helper functions to create badge objects
-const createFirstStepBadge = (courseTitle) => ({
-  id: uuidv4(),
-  type: BADGE_TYPES.FIRST_STEP,
-  title: "First Steps",
-  description: `Started learning ${courseTitle}`,
-  icon: "play",
-  level: BADGE_LEVELS.BRONZE,
-  category: BADGE_CATEGORIES.ENGAGEMENT,
-  points: 10
-});
+export const BADGE_LEVELS = {
+  BRONZE: 'bronze',
+  SILVER: 'silver',
+  GOLD: 'gold',
+  PLATINUM: 'platinum'
+};
 
-const createFirstLessonBadge = (courseTitle) => ({
-  id: uuidv4(),
-  type: BADGE_TYPES.FIRST_LESSON,
-  title: "Fast Learner",
-  description: `Completed your first lesson in ${courseTitle}`,
-  icon: "check-circle",
-  level: BADGE_LEVELS.BRONZE,
-  category: BADGE_CATEGORIES.COMPLETION,
-  points: 20
-});
-
-const createOfflineWarriorBadge = (courseTitle) => ({
-  id: uuidv4(),
-  type: BADGE_TYPES.OFFLINE_WARRIOR,
-  title: "Offline Warrior",
-  description: `Completed a lesson in ${courseTitle} while offline`,
-  icon: "wifi-off",
-  level: BADGE_LEVELS.SILVER,
-  category: BADGE_CATEGORIES.SPECIAL,
-  points: 30
-});
-
-const createHalfwayBadge = (courseTitle) => ({
-  id: uuidv4(),
-  type: BADGE_TYPES.HALFWAY,
-  title: "Halfway There",
-  description: `Completed 50% of ${courseTitle}`,
-  icon: "flag",
-  level: BADGE_LEVELS.SILVER,
-  category: BADGE_CATEGORIES.ACHIEVEMENT,
-  points: 50
-});
-
-const createCourseCompleteBadge = (courseTitle) => ({
-  id: uuidv4(),
-  type: BADGE_TYPES.COURSE_COMPLETE,
-  title: "Course Mastery",
-  description: `Completed the entire ${courseTitle} course`,
-  icon: "award",
-  level: BADGE_LEVELS.GOLD,
-  category: BADGE_CATEGORIES.COMPLETION,
-  points: 100
-});
-
-const createQuizMasterBadge = (courseTitle) => ({
-  id: uuidv4(),
-  type: BADGE_TYPES.QUIZ_MASTER,
-  title: "Quiz Master",
-  description: `Achieved a perfect score in a ${courseTitle} quiz`,
-  icon: "star",
-  level: BADGE_LEVELS.GOLD,
-  category: BADGE_CATEGORIES.ACHIEVEMENT,
-  points: 75
-});
-
-const createDefaultBadge = (level, category, courseTitle) => ({
-  id: uuidv4(),
-  title: "Achievement Unlocked",
-  description: `Earned a badge in ${courseTitle}`,
-  icon: "award",
-  level: level || BADGE_LEVELS.BRONZE,
-  category: category || BADGE_CATEGORIES.ACHIEVEMENT,
-  points: 25
-});
-     name: 'Course Starter',
-     description: 'Started your first course',
-     icon: 'play',
-       return 'bg-gradient-to-r from-gray-500 to-gray-400';
-   }
- };
+export const BADGE_CATEGORIES = {
+  COMPLETION: 'completion',
+  ENGAGEMENT: 'engagement',
+  ACHIEVEMENT: 'achievement',
+  SPECIAL: 'special'
+};
 
 // Helper functions to create badge objects
 export const createBadge = (badgeType, level, category, courseTitle) => {
@@ -125,7 +41,7 @@ export const createBadge = (badgeType, level, category, courseTitle) => {
       return createCourseCompleteBadge(courseTitle);
     case 'QUIZ_MASTER':
       return createQuizMasterBadge(courseTitle);
-    default:
+     default:
       return createDefaultBadge(level, category, courseTitle);
   }
 };
@@ -135,7 +51,8 @@ const createFirstStepBadge = (courseTitle) => ({
   id: uuidv4(),
   title: "First Steps",
   description: `Started learning ${courseTitle}`,
-  icon: "play",
+  icon: "play", 
+  type: BADGE_TYPES.FIRST_STEP,
   level: BADGE_LEVELS.BRONZE,
   category: BADGE_CATEGORIES.ENGAGEMENT,
   points: 10
@@ -144,16 +61,18 @@ const createFirstStepBadge = (courseTitle) => ({
 const createFirstLessonBadge = (courseTitle) => ({
   id: uuidv4(),
   title: "Fast Learner",
-  description: `Completed your first lesson in ${courseTitle}`,
+  description: `Completed your first lesson in ${courseTitle}`, 
   icon: "check-circle",
+  type: BADGE_TYPES.FIRST_LESSON,
   level: BADGE_LEVELS.BRONZE,
   category: BADGE_CATEGORIES.COMPLETION,
   points: 20
 });
 
 const createOfflineWarriorBadge = (courseTitle) => ({
-  id: uuidv4(),
+  title: "Offline Warrior", 
   title: "Offline Warrior",
+  type: BADGE_TYPES.OFFLINE_WARRIOR,
   description: `Completed a lesson in ${courseTitle} while offline`,
   icon: "wifi-off",
   level: BADGE_LEVELS.SILVER,
@@ -164,8 +83,9 @@ const createOfflineWarriorBadge = (courseTitle) => ({
 const createHalfwayBadge = (courseTitle) => ({
   id: uuidv4(),
   title: "Halfway There",
-  description: `Completed 50% of ${courseTitle}`,
+  description: `Completed 50% of ${courseTitle}`, 
   icon: "flag",
+  type: BADGE_TYPES.HALFWAY,
   level: BADGE_LEVELS.SILVER,
   category: BADGE_CATEGORIES.ACHIEVEMENT,
   points: 50
@@ -174,7 +94,8 @@ const createHalfwayBadge = (courseTitle) => ({
 const createCourseCompleteBadge = (courseTitle) => ({
   id: uuidv4(),
   title: "Course Mastery",
-  description: `Completed the entire ${courseTitle} course`,
+  description: `Completed the entire ${courseTitle} course`, 
+  type: BADGE_TYPES.COURSE_COMPLETE,
   icon: "award",
   level: BADGE_LEVELS.GOLD,
   category: BADGE_CATEGORIES.COMPLETION,
@@ -184,8 +105,9 @@ const createCourseCompleteBadge = (courseTitle) => ({
 const createQuizMasterBadge = (courseTitle) => ({
   id: uuidv4(),
   title: "Quiz Master",
-  description: `Achieved a perfect score in a ${courseTitle} quiz`,
+  description: `Achieved a perfect score in a ${courseTitle} quiz`, 
   icon: "star",
+  type: BADGE_TYPES.QUIZ_MASTER,
   level: BADGE_LEVELS.GOLD,
   category: BADGE_CATEGORIES.ACHIEVEMENT,
   points: 75
@@ -194,8 +116,9 @@ const createQuizMasterBadge = (courseTitle) => ({
 const createDefaultBadge = (level, category, courseTitle) => ({
   id: uuidv4(),
   title: "Achievement Unlocked",
-  description: `Earned a badge in ${courseTitle}`,
+  description: `Earned a badge in ${courseTitle}`, 
   icon: "award",
+  type: BADGE_TYPES.COURSE_STARTER,
   level: level || BADGE_LEVELS.BRONZE,
   category: category || BADGE_CATEGORIES.ACHIEVEMENT,
   points: 25
