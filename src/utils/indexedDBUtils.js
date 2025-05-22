@@ -246,6 +246,7 @@ export const getAllLeaderboards = async () => {
   }
 
 // Resource-related operations
+
 export const saveResource = async (resource) => {
   try {
     const db = await initDB();
@@ -278,5 +279,4 @@ export const getCourseResources = async (courseId) => {
     console.error(`Error fetching resources for course ${courseId}:`, error);
     return [];
   }
-};
 };
