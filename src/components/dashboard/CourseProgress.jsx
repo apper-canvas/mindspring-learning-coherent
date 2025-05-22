@@ -112,6 +112,7 @@ const CourseProgress = ({ courses = [], loading }) => {
                   <BarChartIcon className="w-4 h-4 mr-1.5 sm:mr-0" /> <span className="hidden sm:inline">Progress</span>
               </Link>
             </div>
+            </div>
             <div className="p-4">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium text-surface-700 dark:text-surface-300">
