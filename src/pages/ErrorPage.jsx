@@ -13,12 +13,13 @@ const ErrorPage = () => {
   const [searchParams] = useSearchParams();
   const errorCode = searchParams.get('code') || 'unknown';
   
+  const errorMessage = searchParams.get('message') || 'An error occurred';
+  
   // Determine if this is an authentication error
   const isAuthError = errorCode.includes('auth') || 
                      errorMessage.toLowerCase().includes('auth') ||
                      errorMessage.toLowerCase().includes('login') ||
                      errorMessage.toLowerCase().includes('password');
-
   const getErrorTitle = () => {
     if (isAuthError) return 'Authentication Error';
     if (errorCode === '404') return 'Page Not Found';
@@ -26,8 +27,8 @@ const ErrorPage = () => {
     return 'Error Occurred';
   };
 
-  const errorMessage = searchParams.get('message') || 'An error occurred';
-  
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-surface-50 dark:bg-surface-900">
       <div className="w-full max-w-md p-8 bg-white dark:bg-surface-800 rounded-lg shadow-lg text-center">
         <AlertTriangleIcon className="w-16 h-16 mx-auto text-red-500 mb-4" />
         <h1 className="text-2xl font-bold text-red-600 dark:text-red-400 mb-4">{getErrorTitle()}</h1>
@@ -49,9 +50,7 @@ const ErrorPage = () => {
             </Link>
           )}
         </div>
-          Return to Login
-    </div>
-  );
+      </div>
     </div>
   );
 };
