@@ -21,26 +21,26 @@ export default {
         'badge-silver': '#C0C0C0',
         'badge-gold': '#FFD700',
         'badge-platinum': '#E5E4E2',
-        },
         accent: '#f97316',
         badge: {
-          bronze: '#CD7F32',
-          silver: '#C0C0C0',
-          gold: '#FFD700',
-          beginner: '#83c5be',
-          intermediate: '#6b73c1',
-          advanced: '#e76f51', 
-          certificate: '#0ea5e9',
-          certification: '#8b5cf6',
-          course: '#f59e0b',
-          specialization: '#ec4899',
-          master: '#7209b7'
+           bronze: '#CD7F32',
+           silver: '#C0C0C0',
+           gold: '#FFD700',
+           beginner: '#83c5be',
+           intermediate: '#6b73c1',
+           advanced: '#e76f51', 
+           certificate: '#0ea5e9',
+           certification: '#8b5cf6',
+           course: '#f59e0b',
+           specialization: '#ec4899',
+           master: '#7209b7'
         },
         leaderboard: {
-          gold: '#FFD700',
-          silver: '#C0C0C0',
-          bronze: '#CD7F32',
-          highlight: '#4ade80'
+           gold: '#FFD700',
+           silver: '#C0C0C0',
+           bronze: '#CD7F32',
+           highlight: '#4ade80'
+        }
         },
         surface: {
           50: '#f8fafc',   // Lightest
