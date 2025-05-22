@@ -60,6 +60,66 @@ export const getUserProfile = async () => {
   }
 };
 
+// Fetch all users with pagination, sorting, and search
+export const fetchUsers = async ({
+  searchTerm = '',
+  sortField = 'lastActive',
+  sortDirection = 'desc',
+  page = 1,
+  pageSize = 10
+}) => {
+  try {
+    const { ApperClient } = window.ApperSDK;
+    const apperClient = new ApperClient({
+      apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
+      apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
+    });
+
+    // Calculate offset based on page number and page size
+    const offset = (page - 1) * pageSize;
+
+    // Build query parameters
+    const params = {
+      fields: [
+        "Id",
+        "Name",
+        "username",
+        "fullName",
+        "email",
+        "avatar",
+        "streak",
+        "totalLearningTime",
+        "lastActive"
+      ],
+      orderBy: [
+        {
+          fieldName: sortField,
+          SortType: sortDirection.toUpperCase()
+        }
+      ],
+      pagingInfo: {
+        limit: pageSize,
+        offset: offset
+      }
+    };
+
+    // Add search filter if a search term is provided
+    if (searchTerm) {
+      params.where = [
+        { fieldName: "fullName", operator: "Contains", values: [searchTerm] },
+        { fieldName: "username", operator: "Contains", values: [searchTerm] },
+        { fieldName: "email", operator: "Contains", values: [searchTerm] }
+      ];
+    }
+
+    const response = await apperClient.fetchRecords("User3", params);
+    return response;
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    throw error;
+  }
+};
+
 // Update user profile
 export const updateUserProfile = async (userData) => {
   try {

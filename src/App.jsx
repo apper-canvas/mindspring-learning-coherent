@@ -19,6 +19,7 @@ import Badges from './pages/Badges';
 import Courses from './pages/Courses';
 import Dashboard from './pages/Dashboard';
 import CourseDetail from './pages/CourseDetail';
+import Users from './pages/Users';
 import ProfilePage from './pages/ProfilePage';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
@@ -177,6 +178,7 @@ function App() {
             <Route path="/community/mentorship" element={<Community />} />
             <Route path="/practice/:type" element={<NotFound />} />
             <Route path="/badges" element={<ProtectedRoute element={<Badges />} />} />
+            <Route path="/users" element={<Users />} />
             <Route path="/dashboard" element={<ProtectedRoute element={<Dashboard />} />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
