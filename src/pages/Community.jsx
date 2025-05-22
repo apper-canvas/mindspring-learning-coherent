@@ -496,91 +496,94 @@ const Community = () => {
                 </div>
               )}
             </div>          
+          </div>
           
-          {/* Right column - Trending topics */}  
+          {/* Right column - Sidebar */}
+          <div className="lg:col-span-1 space-y-6">
+            {/* Trending topics */}  
             <div className="bg-white dark:bg-surface-800 rounded-xl p-5 shadow-sm border border-surface-200 dark:border-surface-700">
-          <h2 className="font-medium text-lg mb-4 flex items-center">
-            <TrendingUpIcon className="w-5 h-5 mr-2 text-primary" />
-            Trending Topics
-          </h2>
-          
-          {loadingTopics ? (
-            // Loading skeleton for trending topics
-            <div className="space-y-4 animate-pulse">
-              {[1, 2, 3, 4, 5].map(i => (
-                <div key={i} className="flex items-start">
-                  <div className="w-4 h-4 bg-surface-200 dark:bg-surface-700 rounded mr-2 mt-1"></div>
-                  <div className="flex-1">
-                    <div className="h-4 bg-surface-200 dark:bg-surface-700 rounded w-3/4 mb-1"></div>
-                    <div className="h-3 bg-surface-200 dark:bg-surface-700 rounded w-1/2"></div>
-                  </div>
+              <h2 className="font-medium text-lg mb-4 flex items-center">
+                <TrendingUpIcon className="w-5 h-5 mr-2 text-primary" />
+                Trending Topics
+              </h2>
+              
+              {loadingTopics ? (
+                // Loading skeleton for trending topics
+                <div className="space-y-4 animate-pulse">
+                  {[1, 2, 3, 4, 5].map(i => (
+                    <div key={i} className="flex items-start">
+                      <div className="w-4 h-4 bg-surface-200 dark:bg-surface-700 rounded mr-2 mt-1"></div>
+                      <div className="flex-1">
+                        <div className="h-4 bg-surface-200 dark:bg-surface-700 rounded w-3/4 mb-1"></div>
+                        <div className="h-3 bg-surface-200 dark:bg-surface-700 rounded w-1/2"></div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {trendingTopics.length > 0 ? trendingTopics.map(topic => (
-                <div key={topic.Id} className="flex items-start">
-                  <TagIcon className="w-4 h-4 mt-1 mr-2 text-accent" />
-                  <div>
-                    <h3 className="font-medium hover:text-primary cursor-pointer">{topic.title}</h3>
-                    <p className="text-sm text-surface-500 dark:text-surface-400">{topic.postCount} posts this week</p>
-                  </div>
+              ) : (
+                <div className="space-y-4">
+                  {trendingTopics.length > 0 ? trendingTopics.map(topic => (
+                    <div key={topic.Id} className="flex items-start">
+                      <TagIcon className="w-4 h-4 mt-1 mr-2 text-accent" />
+                      <div>
+                        <h3 className="font-medium hover:text-primary cursor-pointer">{topic.title}</h3>
+                        <p className="text-sm text-surface-500 dark:text-surface-400">{topic.postCount} posts this week</p>
+                      </div>
+                    </div>
+                  )) : (
+                    <p className="text-surface-500 dark:text-surface-400 text-center py-4">No trending topics available</p>
+                  )}
                 </div>
-              )) : (
-                <p className="text-surface-500 dark:text-surface-400 text-center py-4">No trending topics available</p>
               )}
-            </div>
-          )}
-          
-          {/* User stats section */}
-          <div className="mt-8 pt-6 border-t border-surface-200 dark:border-surface-700">
-            <h2 className="font-medium text-lg mb-4 flex items-center">
-              <UsersIcon className="w-5 h-5 mr-2 text-primary" />
-              Community Stats
-            </h2>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="bg-surface-50 dark:bg-surface-700/50 p-3 rounded-lg text-center">
-                <div className="text-2xl font-bold text-primary">{posts.length}</div>
-                <div className="text-sm text-surface-500 dark:text-surface-400">Active Discussions</div>
-              </div>
-              <div className="bg-surface-50 dark:bg-surface-700/50 p-3 rounded-lg text-center">
-                <div className="text-2xl font-bold text-primary">
-                  {posts.reduce((total, post) => total + (post.comments?.length || 0), 0)}
+              
+              {/* User stats section */}
+              <div className="mt-8 pt-6 border-t border-surface-200 dark:border-surface-700">
+                <h2 className="font-medium text-lg mb-4 flex items-center">
+                  <UsersIcon className="w-5 h-5 mr-2 text-primary" />
+                  Community Stats
+                </h2>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="bg-surface-50 dark:bg-surface-700/50 p-3 rounded-lg text-center">
+                    <div className="text-2xl font-bold text-primary">{posts.length}</div>
+                    <div className="text-sm text-surface-500 dark:text-surface-400">Active Discussions</div>
+                  </div>
+                  <div className="bg-surface-50 dark:bg-surface-700/50 p-3 rounded-lg text-center">
+                    <div className="text-2xl font-bold text-primary">
+                      {posts.reduce((total, post) => total + (post.comments?.length || 0), 0)}
+                    </div>
+                    <div className="text-sm text-surface-500 dark:text-surface-400">Comments</div>
+                  </div>
                 </div>
-                <div className="text-sm text-surface-500 dark:text-surface-400">Comments</div>
+              </div>
+              
+              {/* Resource links */}
+              <div className="mt-8 pt-6 border-t border-surface-200 dark:border-surface-700">
+                <h3 className="font-medium mb-3">Community Guidelines</h3>
+                <ul className="space-y-2 text-sm">
+                  <li>
+                    <a href="#" className="text-primary hover:underline flex items-center">
+                      <BookmarkIcon className="w-4 h-4 mr-2" />
+                      Community Rules
+                    </a>
+                  </li>
+                  <li>
+                    <a href="#" className="text-primary hover:underline flex items-center">
+                      <BookmarkIcon className="w-4 h-4 mr-2" />
+                      How to Get Help
+                    </a>
+                  </li>
+                  <li>
+                    <a href="#" className="text-primary hover:underline flex items-center">
+                      <BookmarkIcon className="w-4 h-4 mr-2" />
+                      Formatting Tips
+                    </a>
+                  </li>
+                </ul>
               </div>
             </div>
           </div>
-          
-          {/* Resource links */}
-          <div className="mt-8 pt-6 border-t border-surface-200 dark:border-surface-700">
-            <h3 className="font-medium mb-3">Community Guidelines</h3>
-            <ul className="space-y-2 text-sm">
-              <li>
-                <a href="#" className="text-primary hover:underline flex items-center">
-                  <BookmarkIcon className="w-4 h-4 mr-2" />
-                  Community Rules
-                </a>
-              </li>
-              <li>
-                <a href="#" className="text-primary hover:underline flex items-center">
-                  <BookmarkIcon className="w-4 h-4 mr-2" />
-                  How to Get Help
-                </a>
-              </li>
-              <li>
-                <a href="#" className="text-primary hover:underline flex items-center">
-                  <BookmarkIcon className="w-4 h-4 mr-2" />
-                  Formatting Tips
-                </a>
-              </li>
-            </ul>
-          </div>
         </div>
-        </div>
-        </div>
-      
+      </div>
       {/* Create Post Modal */}
       {isCreateModalOpen && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
@@ -671,7 +674,6 @@ const Community = () => {
           </motion.div>
         </div>
       )}
-      </div>
   </>
   );
 };
