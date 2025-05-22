@@ -296,8 +296,6 @@ const Community = () => {
               )}
             </div>
           </div>
-
-        {/* Right column - Community sidebar */}
         <div className="space-y-6">
           {/* Trending topics */}
           <div className="bg-white dark:bg-surface-800 rounded-xl p-5 shadow-sm border border-surface-200 dark:border-surface-700">
@@ -321,7 +319,7 @@ const Community = () => {
             </button>
           </div>
         </div>
-      
+      </div>
       {/* Create Post Modal - Moved outside the grid layout */}
       {isCreateModalOpen && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
