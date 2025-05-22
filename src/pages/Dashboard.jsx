@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { toast } from 'react-toastify';
 import { getIcon } from '../utils/iconUtils';
@@ -10,6 +10,7 @@ import { fetchDashboardData } from '../store/dashboardSlice';
 import CourseProgress from '../components/dashboard/CourseProgress';
 import UpcomingLessons from '../components/dashboard/UpcomingLessons';
 import AchievementSection from '../components/dashboard/AchievementSection';
+import CourseProgressTracker from '../components/dashboard/CourseProgressTracker';
 import LearningStreak from '../components/dashboard/LearningStreak';
 
 // Icons
@@ -17,10 +18,14 @@ const BookIcon = getIcon('book');
 const CalendarIcon = getIcon('calendar');
 const AwardIcon = getIcon('award');
 const ActivityIcon = getIcon('activity');
+const BarChartIcon = getIcon('bar-chart-2');
 const RefreshIcon = getIcon('refresh-cw');
 
 const Dashboard = () => {
   const dispatch = useDispatch();
+  const location = useLocation();
+  const navigate = useNavigate();
+  
   const { 
     enrolledCourses, 
     streakData, 
@@ -31,8 +36,15 @@ const Dashboard = () => {
     loading,
     error
   } = useSelector(state => state.dashboard);
+
+  // Parse URL parameters to get active tab and selected course
+  const params = new URLSearchParams(location.search);
+  const tabFromUrl = params.get('tab');
+  const courseFromUrl = params.get('course');
   
-  const [activeTab, setActiveTab] = useState('courses');
+  const [activeTab, setActiveTab] = useState(tabFromUrl || 'courses');
+  const [selectedCourseId, setSelectedCourseId] = useState(courseFromUrl || null);
+
   
   // Fetch dashboard data when component mounts
   useEffect(() => {
@@ -42,6 +54,12 @@ const Dashboard = () => {
         toast.error('Failed to load dashboard data');
       });
   }, [dispatch]);
+
+  // Update URL when tab changes
+  const setActiveTabWithNavigation = (tab, courseId = null) => {
+    setActiveTab(tab);
+    navigate(`/dashboard?tab=${tab}${courseId ? `&course=${courseId}` : ''}`);
+  };
   
   // Get user's first name for greeting (would come from auth in a real app)
   const userName = "User";
@@ -105,12 +123,13 @@ const Dashboard = () => {
           { id: 'upcoming', label: 'Upcoming', icon: CalendarIcon },
           { id: 'achievements', label: 'Achievements', icon: AwardIcon },
           { id: 'streak', label: 'Learning Streak', icon: ActivityIcon },
+          { id: 'progress', label: 'Progress Tracker', icon: BarChartIcon },
         ].map(tab => {
           const TabIcon = tab.icon;
           return (
             <button
               key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
+              onClick={() => setActiveTabWithNavigation(tab.id)}
               className={`flex items-center px-4 py-2 text-sm font-medium rounded-md transition-colors ${
                 activeTab === tab.id 
                   ? 'bg-white dark:bg-surface-800 text-primary shadow-sm' 
@@ -144,6 +163,14 @@ const Dashboard = () => {
             currentStreak={currentStreak} 
             longestStreak={longestStreak}
             totalLearningTime={totalLearningTime}
+            loading={loading} 
+          />
+        </div>
+        
+        <div className={activeTab === 'progress' ? 'block' : 'hidden lg:block'}>
+          <CourseProgressTracker 
+            courses={enrolledCourses} 
+            selectedCourseId={selectedCourseId}
             loading={loading} 
           />
         </div>

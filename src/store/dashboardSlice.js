@@ -1,13 +1,52 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { coursesData } from '../utils/coursesData';
+import { saveCourseProgress, getDetailedCourseProgress } from '../utils/indexedDBUtils';
 
 // Mock user data with enrolled courses
 const mockEnrolledCourses = [
   {
     ...coursesData[0], // JavaScript Fundamentals
     progress: 65,
+    modules: [
+      {
+        id: 'js-mod-1',
+        title: 'Introduction to JavaScript',
+        description: 'Learn the basics of JavaScript programming',
+        duration: '45 minutes',
+        completed: true
+      },
+      {
+        id: 'js-mod-2',
+        title: 'Variables and Data Types',
+        description: 'Understanding JavaScript variables and data types',
+        duration: '60 minutes',
+        completed: true
+      },
+      {
+        id: 'js-mod-3',
+        title: 'Control Flow',
+        description: 'Conditional statements and loops in JavaScript',
+        duration: '75 minutes',
+        completed: true
+      },
+      {
+        id: 'js-mod-4',
+        title: 'Functions',
+        description: 'Creating and using functions in JavaScript',
+        duration: '90 minutes',
+        completed: false
+      },
+      {
+        id: 'js-mod-5',
+        title: 'Objects and Arrays',
+        description: 'Working with complex data structures',
+        duration: '120 minutes',
+        completed: false
+      }
+    ],
     lastAccessed: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
     nextLesson: {
+      moduleId: 'js-mod-4',
       title: "Advanced Functions",
       date: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000).toISOString(),
       durationMinutes: 45
@@ -16,15 +55,50 @@ const mockEnrolledCourses = [
   {
     ...coursesData[3], // Conversational Spanish
     progress: 42,
-    lastAccessed: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(),
-    nextLesson: {
-      title: "Past Tense Verbs",
-      date: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(),
-      durationMinutes: 30
+    modules: [
+      {
+        id: 'sp-mod-1',
+        title: 'Greetings and Introductions',
+        description: 'Learn basic Spanish greetings and introductions',
+        duration: '30 minutes',
+        completed: true
+      },
+      {
+        id: 'sp-mod-2',
+        title: 'Common Phrases',
+        description: 'Essential phrases for everyday conversations',
+        duration: '45 minutes',
+        completed: true
+      },
+      {
+        id: 'sp-mod-3',
+        title: 'Present Tense Verbs',
+        description: 'Conjugating verbs in the present tense',
+        duration: '60 minutes',
+        completed: false
+      }
+    ],
+      title: "Advanced Functions",
+      date: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000).toISOString(),
+      durationMinutes: 45
     }
   },
   {
+    ...coursesData[3], // Conversational Spanish
+  {
     ...coursesData[9], // Piano for Beginners
+    progress: 28,
+    modules: [
+      {
+        id: 'piano-mod-1',
+        title: 'Introduction to the Piano',
+        description: 'Getting familiar with the piano keyboard',
+        duration: '45 minutes',
+        completed: true
+      }
+    ],
+    lastAccessed: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+  },
     progress: 28,
     lastAccessed: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
     nextLesson: {
@@ -170,6 +244,48 @@ export const fetchDashboardData = createAsyncThunk(
   }
 );
 
+// Update course progress
+export const updateCourseProgress = createAsyncThunk(
+  'dashboard/updateProgress',
+  async ({ courseId, moduleId, isComplete }, { getState, rejectWithValue }) => {
+    try {
+      const { dashboard } = getState();
+      const courseIndex = dashboard.enrolledCourses.findIndex(course => course.id === courseId);
+      
+      if (courseIndex === -1) {
+        return rejectWithValue('Course not found');
+      }
+      
+      const course = dashboard.enrolledCourses[courseIndex];
+      const moduleIndex = course.modules.findIndex(module => module.id === moduleId);
+      
+      if (moduleIndex === -1) {
+        return rejectWithValue('Module not found');
+      }
+      
+      // Create updated course with the module's completion status changed
+      const updatedCourse = {
+        ...course,
+        modules: course.modules.map((module, idx) => 
+          idx === moduleIndex ? { ...module, completed: isComplete } : module
+        )
+      };
+      
+      // Calculate new progress percentage
+      const completedModules = updatedCourse.modules.filter(module => module.completed).length;
+      const totalModules = updatedCourse.modules.length;
+      updatedCourse.progress = Math.round((completedModules / totalModules) * 100);
+      
+      // Save progress to IndexedDB for offline support
+      await saveCourseProgress(updatedCourse);
+      
+      return { courseIndex, updatedCourse };
+    } catch (error) {
+      return rejectWithValue(error.message || 'Failed to update course progress');
+    }
+  }
+);
+
 const initialState = {
   enrolledCourses: [],
   streakData: [],
@@ -242,6 +358,14 @@ const dashboardSlice = createSlice({
       .addCase(fetchDashboardData.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || 'Failed to fetch dashboard data';
+      })
+      .addCase(updateCourseProgress.fulfilled, (state, action) => {
+        const { courseIndex, updatedCourse } = action.payload;
+        state.enrolledCourses[courseIndex] = updatedCourse;
+      })
+      .addCase(updateCourseProgress.rejected, (state, action) => {
+        // Handle error state if needed
+        state.error = action.payload || 'Failed to update course progress';
       });
   }
 });

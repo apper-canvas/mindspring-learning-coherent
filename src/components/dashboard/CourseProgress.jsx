@@ -8,6 +8,7 @@ const PlayIcon = getIcon('play');
 const ClockIcon = getIcon('clock');
 const CheckCircleIcon = getIcon('check-circle');
 const ArrowRightIcon = getIcon('arrow-right');
+const BarChartIcon = getIcon('bar-chart-2');
 
 const CourseProgress = ({ courses, loading }) => {
   if (loading) {
@@ -74,8 +75,13 @@ const CourseProgress = ({ courses, loading }) => {
                   </span>
                 </p>
               </div>
-              <button className="btn-primary-outline text-sm py-1.5 px-3 flex items-center">
-                <PlayIcon className="w-4 h-4 mr-1.5" /> Resume
+              <div className="flex space-x-2">
+              <button className="btn-primary-outline text-sm py-1.5 px-3 flex items-center" title="Continue learning">
+                <PlayIcon className="w-4 h-4 mr-1.5" /> 
+                <span className="hidden sm:inline">Resume</span>
+              </button>
+              <Link to={`/dashboard?tab=progress&course=${course.id}`} className="btn-ghost text-sm py-1.5 px-3 flex items-center" title="View detailed progress">
+                <BarChartIcon className="w-4 h-4 mr-1.5 sm:mr-0" /> <span className="hidden sm:inline">Progress</span>
               </button>
             </div>
             
@@ -91,6 +97,9 @@ const CourseProgress = ({ courses, loading }) => {
                 )}
               </div>
               <div className="w-full bg-surface-200 dark:bg-surface-600 rounded-full h-2.5">
+                <motion.div 
+                  initial={{ width: 0 }}
+                  animate={{ width: `${course.progress}%` }}
                 <div className="bg-primary h-2.5 rounded-full" style={{ width: `${course.progress}%` }}></div>
               </div>
             </div>

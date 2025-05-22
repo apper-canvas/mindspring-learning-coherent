@@ -1,10 +1,11 @@
 import { openDB } from 'idb';
 
 const DB_NAME = 'mindspring-offline';
-const DB_VERSION = 3;
+const DB_VERSION = 4;
 const COURSES_STORE = 'courses';
 const PROGRESS_STORE = 'progress';
 const BADGES_STORE = 'badges';
+const MODULE_PROGRESS_STORE = 'moduleProgress';
 const LEADERBOARD_STORE = 'leaderboards';
 
 const initDB = async () => {
@@ -21,6 +22,10 @@ const initDB = async () => {
       
       if (!db.objectStoreNames.contains(BADGES_STORE)) {
         db.createObjectStore(BADGES_STORE, { keyPath: 'id' });
+      }
+
+      if (!db.objectStoreNames.contains(MODULE_PROGRESS_STORE)) {
+        db.createObjectStore(MODULE_PROGRESS_STORE, { keyPath: 'id' });
       }
       
       if (!db.objectStoreNames.contains(LEADERBOARD_STORE)) {
@@ -90,6 +95,68 @@ export const getOfflineCoursesProgress = async () => {
   } catch (error) {
     console.error('Error fetching offline progress:', error);
     return [];
+  }
+};
+
+// Save detailed course progress with module information
+export const saveDetailedCourseProgress = async (courseId, modules) => {
+  try {
+    const db = await initDB();
+    await db.put(MODULE_PROGRESS_STORE, {
+      id: courseId,
+      modules,
+      updatedAt: new Date().toISOString()
+    });
+    return true;
+  } catch (error) {
+    console.error('Error saving detailed course progress:', error);
+    return false;
+  }
+};
+
+// Get detailed progress for a specific course
+export const getDetailedCourseProgress = async (courseId) => {
+  try {
+    const db = await initDB();
+    return await db.get(MODULE_PROGRESS_STORE, courseId);
+  } catch (error) {
+    console.error(`Error fetching detailed progress for course ${courseId}:`, error);
+    return null;
+  }
+};
+
+// Get all detailed course progress
+export const getAllDetailedProgress = async () => {
+  try {
+    const db = await initDB();
+    return await db.getAll(MODULE_PROGRESS_STORE);
+  } catch (error) {
+    console.error('Error fetching all detailed progress:', error);
+    return [];
+  }
+};
+
+// Save complete course data with progress information
+export const saveCourseProgress = async (course) => {
+  try {
+    const db = await initDB();
+    
+    // Save overall course progress
+    await db.put(PROGRESS_STORE, {
+      id: course.id,
+      progress: course.progress,
+      lastUpdated: new Date().toISOString()
+    });
+    
+    // Save detailed module progress
+    await saveDetailedCourseProgress(course.id, course.modules);
+    
+    // Update course info
+    await db.put(COURSES_STORE, course);
+    return true;
+  } catch (error) {
+    console.error('Error saving course progress:', error);
+    return false;
   }
 };
 
