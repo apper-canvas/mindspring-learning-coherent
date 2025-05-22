@@ -80,6 +80,7 @@ const Courses = () => {
     }
     
     // Filter by category param from URL if present
+    if (categoryParam) {
       result = result.filter(course => {
         if (course.categories) {
           return course.categories.includes(categoryParam);
