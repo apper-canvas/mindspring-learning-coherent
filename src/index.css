@@ -137,6 +137,45 @@
     @apply badge-achievement from-badge-intermediate to-badge-intermediate/80;
   }
   
+  /* Leaderboard Styles */
+  .leaderboard-table {
+    @apply w-full border-collapse;
+  }
+  
+  .leaderboard-table th {
+    @apply px-4 py-2 text-left text-sm font-medium text-surface-500 dark:text-surface-400;
+  }
+  
+  .leaderboard-table td {
+    @apply px-4 py-3 text-sm border-b border-surface-200 dark:border-surface-700;
+  }
+  
+  .leaderboard-table tr {
+    @apply transition-colors;
+  }
+  
+  .leaderboard-table tr:hover:not(.user-row) {
+    @apply bg-surface-100 dark:bg-surface-700;
+  }
+  
+  .leaderboard-table .user-row {
+    @apply bg-leaderboard-highlight/10 font-medium;
+  }
+  
+  .rank-1 {
+    @apply text-leaderboard-gold font-bold;
+  }
+  
+  .rank-2 {
+    @apply text-leaderboard-silver font-bold;
+  }
+  
+  .rank-3 {
+    @apply text-leaderboard-bronze font-bold;
+  }
+  
+  /* Badge styles (existing) */
+  
 }
 
 @layer utilities {

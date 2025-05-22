@@ -1,10 +1,11 @@
 import { openDB } from 'idb';
 
 const DB_NAME = 'mindspring-offline';
-const DB_VERSION = 2;
+const DB_VERSION = 3;
 const COURSES_STORE = 'courses';
 const PROGRESS_STORE = 'progress';
 const BADGES_STORE = 'badges';
+const LEADERBOARD_STORE = 'leaderboards';
 
 const initDB = async () => {
   return openDB(DB_NAME, DB_VERSION, {
@@ -20,6 +21,10 @@ const initDB = async () => {
       
       if (!db.objectStoreNames.contains(BADGES_STORE)) {
         db.createObjectStore(BADGES_STORE, { keyPath: 'id' });
+      }
+      
+      if (!db.objectStoreNames.contains(LEADERBOARD_STORE)) {
+        db.createObjectStore(LEADERBOARD_STORE, { keyPath: 'id' });
       }
     },
   });
@@ -128,5 +133,43 @@ export const deleteBadge = async (badgeId) => {
   } catch (error) {
     console.error(`Error deleting badge ${badgeId}:`, error);
     return false;
+  }
+};
+
+// Leaderboard-related operations
+export const saveLeaderboardData = async (leaderboardData) => {
+  try {
+    const db = await initDB();
+    const id = `${leaderboardData.courseId}-${leaderboardData.period}`;
+    await db.put(LEADERBOARD_STORE, {
+      id,
+      ...leaderboardData,
+      timestamp: new Date().toISOString()
+    });
+    return true;
+  } catch (error) {
+    console.error('Error saving leaderboard data:', error);
+    return false;
+  }
+};
+
+export const getLeaderboardData = async (courseId, period) => {
+  try {
+    const db = await initDB();
+    const id = `${courseId}-${period}`;
+    return await db.get(LEADERBOARD_STORE, id);
+  } catch (error) {
+    console.error('Error fetching leaderboard data:', error);
+    return null;
+  }
+};
+
+export const getAllLeaderboards = async () => {
+  try {
+    const db = await initDB();
+    return await db.getAll(LEADERBOARD_STORE);
+  } catch (error) {
+    console.error('Error fetching all leaderboards:', error);
+    return [];
   }
 };

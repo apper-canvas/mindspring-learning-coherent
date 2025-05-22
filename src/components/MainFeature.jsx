@@ -6,6 +6,7 @@ import { saveCourseProgress } from '../utils/indexedDBUtils';
 import { getIcon } from '../utils/iconUtils';
 import DownloadManager from './DownloadManager';
 import BadgeDisplay from './BadgeDisplay';
+import LeaderboardDisplay from './LeaderboardDisplay';
 import { checkAndAwardBadge, fetchBadges } from '../store/badgeSlice';
 
 // Icons
@@ -19,6 +20,7 @@ const DownloadIcon = getIcon('download');
 const WifiOffIcon = getIcon('wifi-off');
 const ArrowRightIcon = getIcon('arrow-right');
 const AwardIcon = getIcon('award');
+const UsersIcon = getIcon('users');
 
 // Sample course data
 const courseLessons = [
@@ -96,8 +98,8 @@ const MainFeature = () => {
     completed: false,
   });
 
-  // For demo purposes, create a course object that can be passed to DownloadManager
-    title: "JavaScript Fundamentals",  
+  // Create a course object for DownloadManager
+  const courseData = {
     id: 1,
     title: "JavaScript Fundamentals",
     description: "Learn the basics of JavaScript programming",
@@ -335,11 +337,11 @@ const MainFeature = () => {
             activeTab === 'downloads' 
               ? 'text-primary border-b-2 border-primary' 
               : 'text-surface-600 dark:text-surface-400 hover:text-primary dark:hover:text-primary'
-          }`}
+          }`}>
           <DownloadIcon className="w-4 h-4 mr-2" />
           Downloads
-          Lessons
         </button>
+        
         <button 
           onClick={() => setActiveTab('quiz')} 
           className={`flex items-center px-4 py-3 text-sm font-medium transition-colors ${
@@ -351,6 +353,18 @@ const MainFeature = () => {
           <BarChart2Icon className="w-4 h-4 mr-2" />
           Quiz
         </button>
+        <button 
+          onClick={() => setActiveTab('leaderboard')} 
+          className={`flex items-center px-4 py-3 text-sm font-medium transition-colors ${
+            activeTab === 'leaderboard' 
+              ? 'text-primary border-b-2 border-primary' 
+              : 'text-surface-600 dark:text-surface-400 hover:text-primary dark:hover:text-primary'
+          }`}
+        >
+          <UsersIcon className="w-4 h-4 mr-2" />
+          Leaderboard
+        </button>
+        
         <button 
           onClick={() => setActiveTab('progress')} 
           className={`flex items-center px-4 py-3 text-sm font-medium transition-colors ${
@@ -370,7 +384,7 @@ const MainFeature = () => {
               : 'text-surface-600 dark:text-surface-400 hover:text-primary dark:hover:text-primary'
           }`}
         >
-          Progress
+          Badges
         </button>
       </div>
 
@@ -687,6 +701,13 @@ const MainFeature = () => {
                 </motion.div>
               )
             )}
+          </div>
+        )}
+
+        {/* Leaderboard Tab */}
+        {activeTab === 'leaderboard' && (
+          <div className="space-y-6">
+            <LeaderboardDisplay courseId={1} courseTitle="JavaScript Fundamentals" />
           </div>
         )}
 

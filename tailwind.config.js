@@ -27,6 +27,12 @@ export default {
           advanced: '#e76f51',
           master: '#7209b7'
         },
+        leaderboard: {
+          gold: '#FFD700',
+          silver: '#C0C0C0',
+          bronze: '#CD7F32',
+          highlight: '#4ade80'
+        },
         surface: {
           50: '#f8fafc',   // Lightest
           100: '#f1f5f9',

@@ -5,6 +5,9 @@ import { AnimatePresence } from 'framer-motion';
 import { useDispatch } from 'react-redux';
 import { checkNetworkStatus, syncOfflineProgress } from './store/offlineSlice';
 
+// Mocked API for leaderboard sample data (would be real API in production)
+import './utils/leaderboardUtils';
+
 // Pages
 import Home from './pages/Home';
 import NotFound from './pages/NotFound';
