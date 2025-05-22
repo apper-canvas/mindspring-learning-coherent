@@ -80,9 +80,14 @@ const LearningStreak = ({ streakData, currentStreak, longestStreak, totalLearnin
             formatter: (value) => `${value} minutes`
           },
           x: {
-            formatter: (value) => {
-              const date = new Date(streakData[value - 1].date);
-              return date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+            formatter: (index) => {
+              // Validate the index and ensure data exists to prevent "Cannot read properties of undefined"
+              const dataIndex = index - 1;
+              if (isNaN(dataIndex) || dataIndex < 0 || dataIndex >= streakData.length || !streakData[dataIndex]) {
+                return 'Unknown date';
+              }
+              const dateStr = streakData[dataIndex].date;
+              return new Date(dateStr).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
             }
           }
         },
