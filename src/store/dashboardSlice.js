@@ -78,13 +78,14 @@ const mockEnrolledCourses = [
         completed: false
       }
     ],
-      title: "Advanced Functions",
+    lastAccessed: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+    nextLesson: {
+      moduleId: 'sp-mod-3',
+      title: "Present Tense Verbs",
       date: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000).toISOString(),
       durationMinutes: 45
     }
   },
-  {
-    ...coursesData[3], // Conversational Spanish
   {
     ...coursesData[9], // Piano for Beginners
     progress: 28,
@@ -96,10 +97,6 @@ const mockEnrolledCourses = [
         duration: '45 minutes',
         completed: true
       }
-    ],
-    lastAccessed: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
-  },
-    progress: 28,
     lastAccessed: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
     nextLesson: {
       title: "Reading Sheet Music",
