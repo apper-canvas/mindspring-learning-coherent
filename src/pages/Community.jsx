@@ -66,7 +66,7 @@ const Community = () => {
         
         // Add search term if provided
         if (searchQuery) {
-          filters.searchTerm = searchTerm;
+          filters.searchTerm = searchQuery;
         }
         
         const fetchedPosts = await getPosts(filters);
@@ -361,6 +361,7 @@ const Community = () => {
                 >Post</button>
               </div>
             </motion.div>
+          </div>
         </div>
         
         {/* Right column - Community sidebar */}
