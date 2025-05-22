@@ -389,7 +389,7 @@ const Community = () => {
           </div>
       )}
       </div> {/* End of container */}
-    </>
+    </> {/* End of fragment */}
   );
 };
 
