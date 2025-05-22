@@ -65,10 +65,10 @@ const CourseDetail = () => {
         if (foundCourse.category) {
           // TODO: Get related courses based on category
           return;
+        }
         
-        // For now just use hardcoded data
+        // Initialize with empty array until we implement related courses
         setRelatedCourses([]);
-        setRelatedCourses(related);
       } catch (error) {
         setError('Failed to load course details');
         console.error('Error loading course details:', error);
