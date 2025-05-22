@@ -245,6 +245,7 @@ export const getAllLeaderboards = async () => {
     return [];
   }
 
+}
 // Resource-related operations
 
 export const saveResource = async (resource) => {
