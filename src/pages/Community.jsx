@@ -320,10 +320,11 @@ const Community = () => {
             <button className="w-full mt-4 text-sm text-primary hover:underline">
               View All Topics
             </button>
-        </div>
-      </div> {/* End of grid layout */}
+          </div>
+        </div> {/* End of grid layout */}
+      
       {/* Create Post Modal - Moved outside the grid layout */}
-      {isCreateModalOpen && (
+        {isCreateModalOpen && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <motion.div 
             initial={{ opacity: 0, scale: 0.9 }}
@@ -388,7 +389,7 @@ const Community = () => {
             </motion.div>
           </div>
       )}
-    </div>
+     </div>
   );
 };
 
