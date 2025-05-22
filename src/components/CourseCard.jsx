@@ -63,64 +63,69 @@ const CourseCard = ({ course }) => {
   };
 
   return (
-    <motion.div
-      whileHover={{ y: -5 }}
-      transition={{ duration: 0.2 }}
-      className="card overflow-hidden flex flex-col h-full"
-    >
-      {/* Course Image */}
-      <div className="relative">
-        <img 
-          src={course.imageUrl} 
-          alt={course.title} 
-          className="w-full h-48 object-cover"
-        />
-        <div className="absolute top-3 right-3">
-          <span className={`text-xs font-medium px-2 py-1 rounded-full ${getDifficultyColor(course.difficulty)}`}>
-            {getDifficultyLabel(course.difficulty)}
-          </span>
-        </div>
-      </div>
-      
-      {/* Course Content */}
-      <div className="p-5 flex-grow flex flex-col">
-        <h3 className="text-lg font-semibold mb-2 line-clamp-2">{course.title}</h3>
-        
-        <div className="flex items-center mb-3 text-sm text-surface-600 dark:text-surface-400">
-          <UserIcon className="w-4 h-4 mr-1" />
-          <span>{course.instructor}</span>
-          <span className="mx-2">•</span>
-          <ClockIcon className="w-4 h-4 mr-1" />
-          <span>{course.duration}</span>
-        </div>
-        
-        <p className="text-sm text-surface-600 dark:text-surface-400 mb-4 line-clamp-3">{course.description}</p>
-        
-        <div className="flex items-center justify-between mt-auto">
-          <div className="flex items-center">
-            <StarIcon className="w-4 h-4 text-yellow-500 mr-1" />
-            <span className="text-sm font-medium">{course.rating}</span>
-            <span className="mx-2 text-surface-400">•</span>
-            <UsersIcon className="w-4 h-4 text-surface-500 mr-1" />
-            <span className="text-sm">{course.enrollments} students</span>
+    <Link to={`/courses/${course.id}`} className="block h-full">
+      <motion.div
+        whileHover={{ y: -5 }}
+        transition={{ duration: 0.2 }}
+        className="card overflow-hidden flex flex-col h-full"
+      >
+        {/* Course Image */}
+        <div className="relative">
+          <img 
+            src={course.imageUrl} 
+            alt={course.title} 
+            className="w-full h-48 object-cover"
+          />
+          <div className="absolute top-3 right-3">
+            <span className={`text-xs font-medium px-2 py-1 rounded-full ${getDifficultyColor(course.difficulty)}`}>
+              {getDifficultyLabel(course.difficulty)}
+            </span>
           </div>
         </div>
-      </div>
-      
-      {/* Course Actions */}
-      <div className="px-5 pb-5 pt-2 border-t border-surface-200 dark:border-surface-700 flex justify-between">
-        <button onClick={handleEnroll} disabled={isEnrolling} className="btn-primary text-sm py-1.5">
-          {isEnrolling ? 'Enrolling...' : 'Enroll Now'}
-        </button>
-        <button onClick={handleDownload} disabled={isDownloading} className="btn-ghost text-sm py-1.5">
-          {isDownloading ? (
-            <span className="flex items-center">Downloading...</span>
-          ) : (
-            <span className="flex items-center"><DownloadIcon className="w-4 h-4 mr-1" /> Offline</span>
-          )}
-        </button>
-      </div>
-    </motion.div>
+        
+        {/* Course Content */}
+        <div className="p-5 flex-grow flex flex-col">
+          <h3 className="text-lg font-semibold mb-2 line-clamp-2">{course.title}</h3>
+          
+          <div className="flex items-center mb-3 text-sm text-surface-600 dark:text-surface-400">
+            <UserIcon className="w-4 h-4 mr-1" />
+            <span>{course.instructor}</span>
+            <span className="mx-2">•</span>
+            <ClockIcon className="w-4 h-4 mr-1" />
+            <span>{course.duration}</span>
+          </div>
+          
+          <p className="text-sm text-surface-600 dark:text-surface-400 mb-4 line-clamp-3">{course.description}</p>
+          
+          <div className="flex items-center justify-between mt-auto">
+            <div className="flex items-center">
+              <StarIcon className="w-4 h-4 text-yellow-500 mr-1" />
+              <span className="text-sm font-medium">{course.rating}</span>
+              <span className="mx-2 text-surface-400">•</span>
+              <UsersIcon className="w-4 h-4 text-surface-500 mr-1" />
+              <span className="text-sm">{course.enrollments} students</span>
+            </div>
+          </div>
+        </div>
+        
+        {/* Course Actions */}
+        <div className="px-5 pb-5 pt-2 border-t border-surface-200 dark:border-surface-700 flex justify-between">
+          <button 
+            onClick={(e) => {e.preventDefault(); handleEnroll();}} 
+            disabled={isEnrolling} 
+            className="btn-primary text-sm py-1.5">
+            {isEnrolling ? 'Enrolling...' : 'Enroll Now'}
+          </button>
+          <button onClick={(e) => {e.preventDefault(); handleDownload(e);}} disabled={isDownloading} className="btn-ghost text-sm py-1.5">
+            {isDownloading ? (
+              <span className="flex items-center">Downloading...</span>
+            ) : (
+              <span className="flex items-center"><DownloadIcon className="w-4 h-4 mr-1" /> Offline</span>
+            )}
+          </button>
+        </div>
+      </motion.div>
+    </Link>
   );
 };
 

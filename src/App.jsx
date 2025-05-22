@@ -16,6 +16,7 @@ import Community from './pages/Community';
 import Badges from './pages/Badges';
 import Courses from './pages/Courses';
 import Dashboard from './pages/Dashboard';
+import CourseDetail from './pages/CourseDetail';
 
 // Components
 import Header from './components/Header';
@@ -86,6 +87,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/courses" element={<Courses />} />
+          <Route path="/courses/:id" element={<CourseDetail />} />
           <Route path="/explore" element={<Explore />} />
           <Route path="/community" element={<Community />} />
           <Route path="/badges" element={<Badges />} />
